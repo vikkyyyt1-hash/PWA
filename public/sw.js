@@ -1,13 +1,14 @@
+const BASE_URL = self.location.pathname.replace(/\/sw\.js$/, '/')
 const CACHE_NAME = 'habit-keeper-cache-v1'
-const OFFLINE_URL = '/index.html'
+const OFFLINE_URL = `${BASE_URL}index.html`
 const ASSETS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.webmanifest',
-  '/favicon.svg',
-  '/icon-192.svg',
-  '/icon-512.svg',
-  '/icon-maskable.svg'
+  `${BASE_URL}`,
+  `${BASE_URL}index.html`,
+  `${BASE_URL}manifest.webmanifest`,
+  `${BASE_URL}favicon.svg`,
+  `${BASE_URL}icon-192.svg`,
+  `${BASE_URL}icon-512.svg`,
+  `${BASE_URL}icon-maskable.svg`
 ]
 
 self.addEventListener('install', (event) => {
