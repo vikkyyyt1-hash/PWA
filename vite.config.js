@@ -6,4 +6,8 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   base: '/track-s-main/',
   plugins: [react(), tailwindcss()],
+  build: {
+    outDir: 'docs',
+    emptyOutDir: true,
+  },
 })
