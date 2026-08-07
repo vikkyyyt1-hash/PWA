@@ -6,8 +6,7 @@ function App() {
         <h1>Project skeleton ready</h1>
         <p>
           This repository now contains a clean starting point for your capstone project.
-          Keep your source code in the src folder, place assets in the assets folder,
-          and use the README as the main entry point for the project.
+         
         </p>
         <div className="grid">
           <div>
