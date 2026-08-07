@@ -1,88 +1,59 @@
-const issues = [
-  {
-    id: 1,
-    title: 'Build the main app screen and core layout',
-    completed: true,
-  },
-  {
-    id: 2,
-    title: 'Add the first interactive feature or game loop',
-    completed: true,
-  },
-  {
-    id: 3,
-    title: 'Create styling and visual polish for the experience',
-    completed: true,
-  },
-  {
-    id: 4,
-    title: 'Add local data persistence or state saving',
-    completed: true,
-  },
-  {
-    id: 5,
-    title: 'Improve accessibility and responsive behavior',
-    completed: true,
-  },
-  {
-    id: 6,
-    title: 'Prepare deployment and final project documentation',
-    completed: true,
-  },
-]
+import { useState, useEffect } from 'react'
 
 function App() {
-  const completedCount = issues.filter((issue) => issue.completed).length
-  const completionPercent = Math.round((completedCount / issues.length) * 100)
+  // #4 Local Data Persistence (zapisywane w przeglądarce)
+  const [items, setItems] = useState(() => {
+    const saved = localStorage.getItem('capstone_items')
+    return saved ? JSON.parse(saved) : ['Pierwsze zadanie', 'Drugie zadanie']
+  })
+  const [input, setInput] = useState('')
+
+  useEffect(() => {
+    localStorage.setItem('capstone_items', JSON.stringify(items))
+  }, [items])
+
+  // #2 Interactive feature (dodawanie / usuwanie)
+  const addItem = (e) => {
+    e.preventDefault()
+    if (!input.trim()) return
+    setItems([...items, input.trim()])
+    setInput('')
+  }
+
+  const removeItem = (index) => {
+    setItems(items.filter((_, i) => i !== index))
+  }
 
   return (
+    // #1 Core Layout & #5 Responsive / Accessibility
     <main className="app-shell">
-      <section className="card" aria-labelledby="app-title">
-        <header className="hero">
-          <div>
-            <p className="eyebrow">Capstone Project</p>
-            <h1 id="app-title">Issues & Progress</h1>
-            <p className="intro">
-              This capstone project tracks implementation of core features. All issues below represent key milestones
-              for building a polished web experience with clean architecture, responsive design, and proper documentation.
-            </p>
-          </div>
-          <div className="stats" aria-label="Project statistics">
-            <div>
-              <span>Completed</span>
-              <strong>{completedCount}/{issues.length}</strong>
-            </div>
-            <div>
-              <span>Progress</span>
-              <strong>{completionPercent}%</strong>
-            </div>
-          </div>
-        </header>
+      <section className="card">
+        <h1>Capstone App</h1>
+        <p className="subtitle">Prosta aplikacja realizująca założenia projektu.</p>
 
-        <div className="progress-track" aria-hidden="true">
-          <div className="progress-fill" style={{ width: `${completionPercent}%` }} />
-        </div>
+        <form onSubmit={addItem} className="form-row">
+          <input
+            type="text"
+            placeholder="Dodaj wpis..."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            aria-label="Treść nowego wpisu"
+          />
+          <button type="submit">Dodaj</button>
+        </form>
 
-        <div className="issues-list">
-          <h2>Issues</h2>
-          <ul>
-            {issues.map((issue) => (
-              <li key={issue.id} className={`issue-item${issue.completed ? ' completed' : ''}`}>
-                <span className="issue-checkbox">{issue.completed ? '✓' : '○'}</span>
-                <span className="issue-title">{issue.title}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <ul className="item-list">
+          {items.map((item, index) => (
+            <li key={index} className="item-row">
+              <span>{item}</span>
+              <button onClick={() => removeItem(index)} className="delete-btn" aria-label="Usuń wpis">
+                ✕
+              </button>
+            </li>
+          ))}
+        </ul>
 
-        <div className="summary">
-          <h2>Status</h2>
-          <p>
-            {completionPercent === 100
-              ? 'All capstone requirements have been completed. The project is ready for presentation.'
-              : `${completedCount} of ${issues.length} issues are complete.`}
-          </p>
-        </div>
+        {items.length === 0 && <p className="empty">Brak elementów na liście.</p>}
       </section>
     </main>
   )
