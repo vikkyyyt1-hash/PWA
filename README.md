@@ -1,21 +1,24 @@
-# track-s-main
+# Capstone Project
 
-Habit Keeper — a React + Vite Progressive Web App for tracking daily habits.
+This repository is a clean starting point for a capstone project. It keeps the structure simple and professional so you can focus on building your app inside the main folders.
 
-## Features
+## Project structure
 
-- installable PWA with `manifest.webmanifest` and service worker
-- offline-first data persistence via `localStorage`
-- habit add/delete/toggle flow
-- simple local install prompt handling on supported devices
-- Tailwind CSS styling via `@tailwindcss/vite`
+```text
+your-project/
+├── src/           # your code
+├── assets/        # images, sounds, data
+├── README.md      # the front door of your project
+├── .gitignore
+└── vite.config.js
+```
 
-## Local setup
+## Getting started
 
 ```bash
 npm install
-npm.cmd run dev -- --host
+npm run dev
 ```
 
-Then open the local dev URL in your browser.
+Use this project as the base for your own capstone implementation.
 
