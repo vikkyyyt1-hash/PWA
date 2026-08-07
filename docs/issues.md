@@ -1,8 +1,8 @@
 # GitHub Issues
 
-1. Design the game loop and scoring system
-2. Create the first playable level with feedback states
-3. Add polished UI and responsive layouts
-4. Implement progress saving and local leaderboard
-5. Prepare deployment checklist and accessibility pass
-6. Write onboarding copy and tutorial flow
+1. [x] Build the main app screen and core layout
+2. [x] Add the first interactive feature or game loop
+3. [x] Create styling and visual polish for the experience
+4. [x] Add local data persistence or state saving
+5. [x] Improve accessibility and responsive behavior
+6. [x] Prepare deployment and final project documentation
