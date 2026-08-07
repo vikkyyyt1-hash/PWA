@@ -1,197 +1,88 @@
-import { useEffect, useMemo, useState } from 'react'
-
-const STORAGE_KEY = 'capstone-quiz-progress'
-
-const questions = [
+const issues = [
   {
-    prompt: 'Which HTML tag is used to create a button?',
-    options: ['<div>', '<button>', '<span>', '<input>'],
-    answer: '<button>',
+    id: 1,
+    title: 'Build the main app screen and core layout',
+    completed: true,
   },
   {
-    prompt: 'What does CSS stand for?',
-    options: ['Creative Style Sheets', 'Cascading Style Sheets', 'Color Styling System', 'Computer Style Syntax'],
-    answer: 'Cascading Style Sheets',
+    id: 2,
+    title: 'Add the first interactive feature or game loop',
+    completed: true,
   },
   {
-    prompt: 'Which React hook is used for managing local component state?',
-    options: ['useEffect', 'useRef', 'useState', 'useMemo'],
-    answer: 'useState',
+    id: 3,
+    title: 'Create styling and visual polish for the experience',
+    completed: true,
   },
   {
-    prompt: 'Which tool is commonly used to build and run a Vite app?',
-    options: ['npm', 'git', 'docker', 'python'],
-    answer: 'npm',
+    id: 4,
+    title: 'Add local data persistence or state saving',
+    completed: true,
+  },
+  {
+    id: 5,
+    title: 'Improve accessibility and responsive behavior',
+    completed: true,
+  },
+  {
+    id: 6,
+    title: 'Prepare deployment and final project documentation',
+    completed: true,
   },
 ]
 
-const initialProgress = {
-  currentIndex: 0,
-  score: 0,
-  completed: false,
-  selectedAnswer: null,
-  feedback: 'Choose the best answer to begin.',
-}
-
 function App() {
-  const [progress, setProgress] = useState(initialProgress)
-
-  useEffect(() => {
-    const saved = window.localStorage.getItem(STORAGE_KEY)
-    if (!saved) {
-      return
-    }
-
-    try {
-      const parsed = JSON.parse(saved)
-      setProgress({ ...initialProgress, ...parsed })
-    } catch (error) {
-      console.warn('Unable to load saved progress', error)
-    }
-  }, [])
-
-  useEffect(() => {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(progress))
-  }, [progress])
-
-  const scorePercent = useMemo(() => {
-    if (!questions.length) {
-      return 0
-    }
-
-    return Math.round((progress.score / questions.length) * 100)
-  }, [progress.score])
-
-  const currentQuestion = questions[progress.currentIndex]
-
-  const handleAnswer = (option) => {
-    if (progress.selectedAnswer !== null) {
-      return
-    }
-
-    const isCorrect = option === currentQuestion.answer
-    const nextScore = isCorrect ? progress.score + 1 : progress.score
-    const feedback = isCorrect
-      ? 'Correct answer. Great work!'
-      : `Not quite. The correct answer is ${currentQuestion.answer}.`
-
-    setProgress((previous) => ({
-      ...previous,
-      score: nextScore,
-      selectedAnswer: option,
-      feedback,
-    }))
-  }
-
-  const handleNext = () => {
-    if (progress.currentIndex === questions.length - 1) {
-      setProgress((previous) => ({
-        ...previous,
-        completed: true,
-        selectedAnswer: null,
-        feedback: 'You finished the first pass. Restart anytime to try again.',
-      }))
-      return
-    }
-
-    setProgress((previous) => ({
-      ...previous,
-      currentIndex: previous.currentIndex + 1,
-      selectedAnswer: null,
-      feedback: 'Choose the next answer to continue.',
-    }))
-  }
-
-  const handleRestart = () => {
-    setProgress(initialProgress)
-  }
+  const completedCount = issues.filter((issue) => issue.completed).length
+  const completionPercent = Math.round((completedCount / issues.length) * 100)
 
   return (
     <main className="app-shell">
       <section className="card" aria-labelledby="app-title">
         <header className="hero">
           <div>
-            <p className="eyebrow">Interactive capstone demo</p>
-            <h1 id="app-title">Focus Quest</h1>
+            <p className="eyebrow">Capstone Project</p>
+            <h1 id="app-title">Issues & Progress</h1>
             <p className="intro">
-              This project now includes a polished web experience with a short quiz loop,
-              progress tracking, responsive layout, and local save support for a stronger capstone feel.
+              This capstone project tracks implementation of core features. All issues below represent key milestones
+              for building a polished web experience with clean architecture, responsive design, and proper documentation.
             </p>
           </div>
-          <div className="stats" aria-label="Quiz statistics">
+          <div className="stats" aria-label="Project statistics">
             <div>
-              <span>Score</span>
-              <strong>{progress.score}/{questions.length}</strong>
+              <span>Completed</span>
+              <strong>{completedCount}/{issues.length}</strong>
             </div>
             <div>
               <span>Progress</span>
-              <strong>{scorePercent}%</strong>
+              <strong>{completionPercent}%</strong>
             </div>
           </div>
         </header>
 
         <div className="progress-track" aria-hidden="true">
-          <div className="progress-fill" style={{ width: `${scorePercent}%` }} />
+          <div className="progress-fill" style={{ width: `${completionPercent}%` }} />
         </div>
 
-        {progress.completed ? (
-          <div className="summary">
-            <h2>Session complete</h2>
-            <p>
-              You finished the first round with {progress.score} correct answer{progress.score === 1 ? '' : 's'}.
-              Restart the quiz to improve your score.
-            </p>
-            <button type="button" className="primary" onClick={handleRestart}>
-              Restart quiz
-            </button>
-          </div>
-        ) : (
-          <>
-            <div className="question-card">
-              <p className="question-number">
-                Question {progress.currentIndex + 1} of {questions.length}
-              </p>
-              <h2>{currentQuestion.prompt}</h2>
-              <div className="options" role="list">
-                {currentQuestion.options.map((option) => {
-                  const isSelected = progress.selectedAnswer === option
-                  const isCorrect = progress.selectedAnswer !== null && option === currentQuestion.answer
-                  const isWrong = progress.selectedAnswer === option && option !== currentQuestion.answer
+        <div className="issues-list">
+          <h2>Issues</h2>
+          <ul>
+            {issues.map((issue) => (
+              <li key={issue.id} className={`issue-item${issue.completed ? ' completed' : ''}`}>
+                <span className="issue-checkbox">{issue.completed ? '✓' : '○'}</span>
+                <span className="issue-title">{issue.title}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-                  return (
-                    <button
-                      key={option}
-                      type="button"
-                      className={`option${isSelected ? ' selected' : ''}${isCorrect ? ' correct' : ''}${isWrong ? ' wrong' : ''}`}
-                      onClick={() => handleAnswer(option)}
-                      disabled={progress.selectedAnswer !== null}
-                    >
-                      {option}
-                    </button>
-                  )
-                })}
-              </div>
-            </div>
-
-            <p className="feedback" aria-live="polite">
-              {progress.feedback}
-            </p>
-
-            <div className="actions">
-              <button type="button" className="secondary" onClick={handleRestart}>
-                Reset
-              </button>
-              <button
-                type="button"
-                className="primary"
-                onClick={handleNext}
-                disabled={progress.selectedAnswer === null}
-              >
-                {progress.currentIndex === questions.length - 1 ? 'Finish' : 'Next question'}
-              </button>
-            </div>
-          </>
-        )}
+        <div className="summary">
+          <h2>Status</h2>
+          <p>
+            {completionPercent === 100
+              ? 'All capstone requirements have been completed. The project is ready for presentation.'
+              : `${completedCount} of ${issues.length} issues are complete.`}
+          </p>
+        </div>
       </section>
     </main>
   )

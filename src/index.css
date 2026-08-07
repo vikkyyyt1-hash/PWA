@@ -117,73 +117,90 @@ p {
 }
 
 .question-card {
-  border: 1px solid #e2e8f0;
-  border-radius: 1.25rem;
-  padding: 1.25rem;
-  background: #f8fafc;
+  display: none;
 }
 
 .question-number {
-  font-size: 0.9rem;
-  font-weight: 700;
-  color: #2563eb;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  margin-bottom: 0.55rem;
+  display: none;
 }
 
 .options {
-  display: grid;
-  gap: 0.8rem;
-  margin-top: 1rem;
+  display: none;
 }
 
 .option {
-  border: 1px solid #cbd5e1;
+  display: none;
+}
+
+.issue-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid #e2e8f0;
   border-radius: 0.95rem;
   padding: 0.9rem 1rem;
-  text-align: left;
   background: white;
-  color: #0f172a;
-  cursor: pointer;
-  transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+  transition: all 120ms ease;
 }
 
-.option:hover:not(:disabled) {
-  transform: translateY(-1px);
-  border-color: #2563eb;
-}
-
-.option:disabled {
-  cursor: not-allowed;
-}
-
-.option.selected {
-  border-color: #2563eb;
-  background: #eff6ff;
-}
-
-.option.correct {
+.issue-item.completed {
   border-color: #16a34a;
   background: #ecfdf3;
 }
 
-.option.wrong {
-  border-color: #dc2626;
-  background: #fef2f2;
+.issue-checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.issue-item.completed .issue-checkbox {
+  color: #16a34a;
+}
+
+.issue-item:not(.completed) .issue-checkbox {
+  color: #cbd5e1;
+}
+
+.issue-title {
+  flex: 1;
+  color: #0f172a;
+}
+
+.issue-item.completed .issue-title {
+  color: #0f172a;
+  font-weight: 600;
 }
 
 .feedback {
-  min-height: 2.5rem;
-  margin: 1rem 0;
-  font-weight: 600;
-  color: #334155;
+  display: none;
 }
 
 .actions {
+  display: none;
+}
+
+.issues-list {
+  margin: 1.25rem 0;
+}
+
+.issues-list h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.15rem;
+}
+
+.issues-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
   display: flex;
-  justify-content: space-between;
-  gap: 0.75rem;
+  flex-direction: column;
+  gap: 0.7rem;
 }
 
 .primary,
