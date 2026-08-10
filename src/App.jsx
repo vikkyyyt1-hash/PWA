@@ -5,15 +5,14 @@ function App() {
   const [tasks, setTasks] = useState(() => {
     const savedTasks = localStorage.getItem('pwa_tasks')
     return savedTasks ? JSON.parse(savedTasks) : [
-      { id: 1, text: 'Przetestować PWA na telefonie', completed: false },
-      { id: 2, text: 'Dodać tryb offline', completed: true }
+      { id: 1, text: 'Test PWA on mobile device', completed: false },
+      { id: 2, text: 'Add offline support', completed: true }
     ]
   })
   const [input, setInput] = useState('')
   const [deferredPrompt, setDeferredPrompt] = useState(null)
   const [isInstallable, setIsInstallable] = useState(false)
 
-  // Obsługa natywnego zdarzenia instalacji PWA
   useEffect(() => {
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault()
@@ -65,10 +64,9 @@ function App() {
         <h1>📱 PWA Task App</h1>
         <p>Day 6 — Installable Web App</p>
         
-        {/* Przycisk instalacji wyświetla się tylko, gdy przeglądarka zezwala na instalację */}
         {isInstallable && (
           <button onClick={handleInstallClick} className="install-btn">
-            📥 Zainstaluj aplikację
+            📥 Install App
           </button>
         )}
       </header>
@@ -78,9 +76,9 @@ function App() {
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Wpisz nowe zadanie..."
+          placeholder="Add a new task..."
         />
-        <button type="submit">Dodaj</button>
+        <button type="submit">Add</button>
       </form>
 
       <ul className="task-list">
