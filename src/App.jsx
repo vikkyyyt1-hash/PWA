@@ -10,6 +10,33 @@ function App() {
     ]
   })
   const [input, setInput] = useState('')
+  const [deferredPrompt, setDeferredPrompt] = useState(null)
+  const [isInstallable, setIsInstallable] = useState(false)
+
+  // Obsługa natywnego zdarzenia instalacji PWA
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault()
+      setDeferredPrompt(e)
+      setIsInstallable(true)
+    }
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+    }
+  }, [])
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return
+    deferredPrompt.prompt()
+    const { outcome } = await deferredPrompt.userChoice
+    if (outcome === 'accepted') {
+      setIsInstallable(false)
+    }
+    setDeferredPrompt(null)
+  }
 
   useEffect(() => {
     localStorage.setItem('pwa_tasks', JSON.stringify(tasks))
@@ -37,6 +64,13 @@ function App() {
       <header>
         <h1>📱 PWA Task App</h1>
         <p>Day 6 — Installable Web App</p>
+        
+        {/* Przycisk instalacji wyświetla się tylko, gdy przeglądarka zezwala na instalację */}
+        {isInstallable && (
+          <button onClick={handleInstallClick} className="install-btn">
+            📥 Zainstaluj aplikację
+          </button>
+        )}
       </header>
 
       <form onSubmit={addTask} className="task-form">
