@@ -1,201 +1,79 @@
-.app-shell {
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding: 24px;
-  max-width: 720px;
+#root {
+  max-width: 500px;
   margin: 0 auto;
+  padding: 2rem 1rem;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-.app-header {
+.app-container {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #1e293b;
+}
+
+header p {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.task-form {
   display: flex;
-  flex-direction: column;
-  gap: 20px;
-  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 1.5rem;
 }
 
-.eyebrow {
-  margin: 0;
-  font-size: 14px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: #7c3aed;
-}
-
-h1 {
-  margin: 0;
-  font-size: clamp(2rem, 4vw, 3rem);
-  line-height: 1.05;
-}
-
-.subtitle {
-  margin: 0;
-  max-width: 40rem;
-  color: var(--text);
-}
-
-.install-button,
-button,
-input {
-  font: inherit;
-}
-
-.install-button {
-  border: none;
-  background: #7c3aed;
-  color: white;
-  border-radius: 999px;
-  padding: 12px 18px;
-  cursor: pointer;
-  box-shadow: 0 16px 40px -25px rgba(124, 58, 237, 0.8);
-  transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.install-button:hover,
-button:hover {
-  transform: translateY(-1px);
-}
-
-.tracker-panel {
-  display: grid;
-  gap: 20px;
-  background: rgba(124, 58, 237, 0.05);
-  border: 1px solid rgba(124, 58, 237, 0.12);
-  border-radius: 28px;
-  padding: 24px;
-}
-
-.habit-form {
-  display: grid;
-  gap: 12px;
-}
-
-.habit-form label {
-  font-weight: 600;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 10px;
-}
-
-input {
-  width: 100%;
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  border-radius: 16px;
-  padding: 14px 16px;
-  background: white;
-  color: var(--text-h);
-}
-
-button[type='submit'] {
-  border: none;
-  background: #fff;
-  color: #7c3aed;
-  border: 1px solid rgba(124, 58, 237, 0.2);
-  padding: 14px 18px;
-  border-radius: 16px;
-  cursor: pointer;
-  min-width: 104px;
-}
-
-.summary-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 14px 18px;
-  background: white;
-  border-radius: 18px;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-}
-
-.empty-state {
-  padding: 36px 24px;
-  border-radius: 22px;
-  background: white;
-  border: 1px dashed rgba(124, 58, 237, 0.2);
-  text-align: center;
-  color: var(--text);
-}
-
-.habit-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 12px;
-}
-
-.habit-card {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 16px 18px;
-  border-radius: 18px;
-  background: white;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-}
-
-.habit-card.done {
-  opacity: 0.68;
-}
-
-.habit-card span {
+.task-form input {
   flex: 1;
-  text-align: left;
-  word-break: break-word;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 1rem;
 }
 
-.habit-card.done span {
+.task-form button {
+  padding: 10px 16px;
+  background-color: #7c3aed;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.task-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.task-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+}
+
+.task-list li.completed span {
   text-decoration: line-through;
+  color: #94a3b8;
 }
 
-.toggle,
-.delete {
-  width: 36px;
-  height: 36px;
+.delete-btn {
+  background: none;
   border: none;
-  border-radius: 50%;
+  color: #ef4444;
+  font-size: 1.1rem;
   cursor: pointer;
-  display: grid;
-  place-items: center;
-}
-
-.toggle {
-  background: #eef2ff;
-  color: #7c3aed;
-}
-
-.delete {
-  background: rgba(15, 23, 42, 0.05);
-  color: #475569;
-}
-
-.clear-button {
-  width: fit-content;
-  justify-self: start;
-  border: none;
-  background: transparent;
-  color: #475569;
-  padding: 10px 12px;
-  border-radius: 16px;
-  cursor: pointer;
-}
-
-@media (max-width: 640px) {
-  .app-shell {
-    padding: 18px;
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-
-  .install-button,
-  button[type='submit'] {
-    width: 100%;
-  }
+  padding: 4px 8px;
 }

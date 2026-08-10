@@ -1,14 +1,27 @@
-export function registerServiceWorker() {
+export function register() {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
+      const swUrl = './sw.js';
       navigator.serviceWorker
-        .register(`${import.meta.env.BASE_URL}sw.js`)
+        .register(swUrl)
         .then((registration) => {
-          console.log('Service worker registered:', registration)
+          console.log('SW Registered: ', registration);
         })
         .catch((error) => {
-          console.warn('Service worker registration failed:', error)
-        })
-    })
+          console.error('SW Registration Error: ', error);
+        });
+    });
+  }
+}
+
+export function unregister() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.ready
+      .then((registration) => {
+        registration.unregister();
+      })
+      .catch((error) => {
+        console.error(error.message);
+      });
   }
 }

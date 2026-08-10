@@ -1,8 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// Upewnij się, że nazwa w 'base' zgadza się dokładnie z nazwą Twojego repozytorium na GitHubie:
 export default defineConfig({
   plugins: [react()],
-  base: '/track-S/', 
+  base: './',
 })

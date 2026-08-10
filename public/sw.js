@@ -1,68 +1,53 @@
-const BASE_URL = self.location.pathname.replace(/\/sw\.js$/, '/')
-const CACHE_NAME = 'habit-keeper-cache-v1'
-const OFFLINE_URL = `${BASE_URL}index.html`
+const CACHE_NAME = 'pwa-app-v1';
 const ASSETS_TO_CACHE = [
-  `${BASE_URL}`,
-  `${BASE_URL}index.html`,
-  `${BASE_URL}manifest.webmanifest`,
-  `${BASE_URL}favicon.svg`,
-  `${BASE_URL}icon-192.svg`,
-  `${BASE_URL}icon-512.svg`,
-  `${BASE_URL}icon-maskable.svg`
-]
+  './',
+  './index.html',
+  './manifest.json',
+  './favicon.svg'
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE))
-  )
-  self.skipWaiting()
-})
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS_TO_CACHE);
+    })
+  );
+  self.skipWaiting();
+});
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            return caches.delete(key)
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cache) => {
+          if (cache !== CACHE_NAME) {
+            return caches.delete(cache);
           }
-          return null
         })
-      )
-    )
-  )
-  self.clients.claim()
-})
+      );
+    })
+  );
+  self.clients.claim();
+});
 
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') {
-    return
-  }
-
-  if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request)
-        .then((response) => {
-          return response
-        })
-        .catch(() => caches.match(OFFLINE_URL))
-    )
-    return
-  }
-
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      const networkFetch = fetch(event.request)
-        .then((response) => {
-          if (response && response.ok) {
-            const responseClone = response.clone()
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone))
-          }
-          return response
-        })
-        .catch(() => cachedResponse)
-
-      return cachedResponse || networkFetch
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      return fetch(event.request).then((response) => {
+        if (!response || response.status !== 200 || response.type !== 'basic') {
+          return response;
+        }
+        const responseToCache = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseToCache);
+        });
+        return response;
+      });
+    }).catch(() => {
+      return caches.match('./index.html');
     })
-  )
-})
+  );
+});
