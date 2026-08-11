@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 
-// Proste haszowanie haseł na potrzeby local-first auth
+// Proste "haszowanie" haseł na potrzeby local-first auth
 const simpleHash = (str) => {
   let hash = 0
   for (let i = 0; i < str.length; i++) {
@@ -12,12 +12,23 @@ const simpleHash = (str) => {
   return hash.toString()
 }
 
+// Funkcja sanityzująca niebezpieczne znaki HTML (Ochrona przed XSS)
+const sanitizeInput = (str) => {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+}
+
 function App() {
-  // PWA Prompt
+  // --- PWA & OFFLINE STATES ---
   const [deferredPrompt, setDeferredPrompt] = useState(null)
   const [isInstallable, setIsInstallable] = useState(false)
+  const [isOffline, setIsOffline] = useState(!navigator.onLine)
 
-  // Auth States (Day 7)
+  // --- AUTH STATES (Day 7) ---
   const [currentUser, setCurrentUser] = useState(() => {
     return localStorage.getItem('pwa_current_user') || null
   })
@@ -26,12 +37,26 @@ function App() {
   const [passwordInput, setPasswordInput] = useState('')
   const [authError, setAuthError] = useState('')
 
-  // Tasks States
+  // --- TASKS STATES ---
   const [tasks, setTasks] = useState([])
   const [input, setInput] = useState('')
   const [taskError, setTaskError] = useState('')
 
-  // Obsługa instalacji PWA
+  // Śledzenie stanu sieci (Offline / Online)
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false)
+    const handleOffline = () => setIsOffline(true)
+
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+
+    return () => {
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+    }
+  }, [])
+
+  // Przechwytywanie zdarzenia instalacji PWA
   useEffect(() => {
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault()
@@ -50,7 +75,7 @@ function App() {
     setDeferredPrompt(null)
   }
 
-  // Wczytywanie zadań dla zalogowanego użytkownika
+  // Pobieranie zadań dla zalogowanego użytkownika
   useEffect(() => {
     if (currentUser) {
       const savedTasks = localStorage.getItem(`pwa_tasks_${currentUser}`)
@@ -63,18 +88,18 @@ function App() {
     }
   }, [currentUser])
 
-  // Zapisywanie zadań
+  // Zapis zadań w localStorage
   useEffect(() => {
     if (currentUser) {
       localStorage.setItem(`pwa_tasks_${currentUser}`, JSON.stringify(tasks))
     }
   }, [tasks, currentUser])
 
-  // Logika rejestracji / logowania
+  // Obsługa logowania / rejestracji
   const handleAuthSubmit = (e) => {
     e.preventDefault()
     setAuthError('')
-    const username = usernameInput.trim().toLowerCase()
+    const username = sanitizeInput(usernameInput.trim().toLowerCase())
     const password = passwordInput.trim()
 
     if (!username || !password) {
@@ -110,14 +135,29 @@ function App() {
     setCurrentUser(null)
   }
 
+  // Obsługa bezpiecznego dodawania zadań
   const addTask = (e) => {
     e.preventDefault()
     setTaskError('')
-    if (!input.trim()) {
+    const trimmedInput = input.trim()
+
+    if (!trimmedInput) {
       setTaskError('Task cannot be empty.')
       return
     }
-    setTasks([...tasks, { id: Date.now(), text: input.trim(), completed: false }])
+
+    if (trimmedInput.length > 100) {
+      setTaskError('Task is too long (max 100 chars).')
+      return
+    }
+
+    if (tasks.some(t => t.text.toLowerCase() === trimmedInput.toLowerCase())) {
+      setTaskError('This task already exists.')
+      return
+    }
+
+    const cleanInput = sanitizeInput(trimmedInput)
+    setTasks([...tasks, { id: Date.now(), text: cleanInput, completed: false }])
     setInput('')
   }
 
@@ -133,10 +173,18 @@ function App() {
     <div className="app-container">
       <header>
         <h1>📱 PWA Task App</h1>
-        <p>Day 7 — App Data & User Accounts</p>
+        <p>Day 7 — Secure PWA & User Accounts</p>
         
+        {/* Pasek statusu Offline */}
+        {isOffline && (
+          <div style={{ background: '#f59e0b', color: '#fff', padding: '6px', borderRadius: '6px', fontSize: '0.85rem', marginTop: '8px', fontWeight: 'bold' }}>
+            📡 You are currently offline (Data saved locally)
+          </div>
+        )}
+
+        {/* Przycisk instalacji PWA */}
         {isInstallable && (
-          <button onClick={handleInstallClick} className="install-btn">
+          <button onClick={handleInstallClick} className="install-btn" style={{ marginTop: '10px' }}>
             📥 Install App
           </button>
         )}
@@ -151,6 +199,7 @@ function App() {
               placeholder="Username"
               value={usernameInput}
               onChange={(e) => setUsernameInput(e.target.value)}
+              maxLength={30}
             />
             <input
               type="password"
@@ -160,7 +209,7 @@ function App() {
             />
             <button type="submit">{isRegistering ? 'Sign Up' : 'Log In'}</button>
           </form>
-          {authError && <p style={{ color: '#ef4444', fontSize: '0.85rem', marginTop: '8px' }}>⚠️ {authError}</p>}
+          {authError && <p style={{ color: '#ef4444', fontSize: '0.85rem', marginTop: '8px', fontWeight: 'bold' }}>⚠️ {authError}</p>}
           <button 
             type="button" 
             onClick={() => {
@@ -183,12 +232,16 @@ function App() {
             <input
               type="text"
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => {
+                setInput(e.target.value)
+                if (taskError) setTaskError('')
+              }}
               placeholder="Add a new task..."
+              maxLength={100}
             />
             <button type="submit">Add</button>
           </form>
-          {taskError && <p style={{ color: '#ef4444', fontSize: '0.85rem', marginTop: '6px' }}>⚠️ {taskError}</p>}
+          {taskError && <p style={{ color: '#ef4444', fontSize: '0.85rem', marginTop: '6px', fontWeight: 'bold' }}>⚠️ {taskError}</p>}
 
           <ul className="task-list" style={{ marginTop: '1rem' }}>
             {tasks.map((task) => (

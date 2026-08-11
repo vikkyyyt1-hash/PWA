@@ -45,9 +45,10 @@ An installable, accessible, and secure task management application built with Re
 
 - **XSS Prevention**: Input sanitization function replaces dangerous HTML entities (`<`, `>`, `&`, `"`, `'`).
 - **Input Validation**: Rejects empty strings, limits task length to 100 characters, and prevents duplicate task entries.
-## 💾 Day 7 — Data Storage & User Accounts
+## 🔒 Security & PWA Features (Day 6 & Day 7)
 
-- **Where is data stored?** 
-  All user credentials (hashed password markers) and user-specific tasks are saved in the browser's `localStorage`.
-- **Who could read it?** 
-  Anyone with physical access to the device or DevTools on this origin. No external servers or third-party APIs are used.
+- **Installable PWA**: Integrated `beforeinstallprompt` listener providing a native "Install App" button.
+- **Offline Support**: Automatically detects offline status (`navigator.onLine`) and retains full functionality using `localStorage`.
+- **Input Sanitization**: Replaces HTML entities (`<`, `>`, `&`, `"`, `'`) to prevent XSS.
+- **Validation**: Enforces char limits, blocks empty entries, and eliminates duplicate tasks.
+- **Data Storage**: User credentials and tasks are isolated per account in `localStorage`.
