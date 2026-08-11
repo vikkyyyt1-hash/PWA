@@ -17,16 +17,20 @@ export default function AuthForm({ onLogin }) {
     e.preventDefault()
     setError('')
 
+    // Oczyszczamy dane użytkownika przed zapisaniem.
     const name = username.trim().toLowerCase()
     const pass = password.trim()
 
+    // Walidacja formularza: pole nie może być puste, a hasło musi być wystarczająco długie.
     if (!name || !pass) return setError('Enter username and password.')
     if (name.length < 3) return setError('Username must be at least 3 chars.')
     if (pass.length < 6) return setError('Password must be at least 6 chars.')
 
+    // Zapisujemy tylko hash, więc w localStorage nigdy nie ma prawdziwego hasła.
     const hash = await hashPassword(pass)
     const db = JSON.parse(localStorage.getItem('pwa_db') || '{}')
 
+    // Rejestracja: dodaj nowego użytkownika. Logowanie: porównaj hashe.
     if (isRegister) {
       if (db[name]) return setError('User already exists!')
       db[name] = hash
