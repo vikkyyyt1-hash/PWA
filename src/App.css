@@ -7,15 +7,22 @@
 
 .app-container {
   background: #ffffff;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 2rem 1.75rem;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(2, 6, 23, 0.12);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+header {
+  text-align: center;
+  margin-bottom: 1.5rem;
 }
 
 header h1 {
   margin: 0;
   font-size: 1.8rem;
-  color: #1e293b;
+  color: #0f172a;
+  letter-spacing: -0.02em;
 }
 
 header p {
@@ -25,59 +32,177 @@ header p {
   margin-bottom: 1.5rem;
 }
 
+.offline-badge {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: #fff7ed;
+  color: #ea580c;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
 .install-btn {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin-bottom: 1rem;
   background-color: #10b981;
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-weight: bold;
   font-size: 0.95rem;
   cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.install-btn:hover {
+  background-color: #059669;
+}
+
+.install-btn:active {
+  transform: scale(0.98);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auth-form h3 {
+  margin: 0 0 0.25rem;
+  color: #0f172a;
+  font-size: 1.25rem;
+}
+
+.auth-form input,
+.task-form input {
+  padding: 12px 14px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: #f8fafc;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.auth-form input:focus,
+.task-form input:focus {
+  outline: none;
+  border-color: #7c3aed;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+}
+
+.btn-primary {
+  padding: 12px 16px;
+  background-color: #7c3aed;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-primary:hover {
+  background-color: #6d28d9;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.error-msg {
+  color: #dc2626;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.switch-btn {
+  background: none;
+  border: none;
+  color: #7c3aed;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.switch-btn:hover {
+  text-decoration: underline;
+}
+
+.user-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.user-bar span {
+  color: #334155;
+}
+
+.btn-secondary {
+  padding: 8px 14px;
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #e2e8f0;
 }
 
 .task-form {
   display: flex;
   gap: 8px;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .task-form input {
   flex: 1;
-  padding: 10px 14px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  font-size: 1rem;
-}
-
-.task-form button {
-  padding: 10px 16px;
-  background-color: #7c3aed;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
 }
 
 .task-list {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 1rem 0 0;
 }
 
 .task-list li {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px;
-  border-bottom: 1px solid #f1f5f9;
+  padding: 12px 14px;
+  border-radius: 10px;
+  margin-bottom: 6px;
+  background: #f8fafc;
+  transition: background 0.2s ease;
+}
+
+.task-list li:hover {
+  background: #f1f5f9;
 }
 
 .task-list li span {
   cursor: pointer;
+  color: #1e293b;
+  word-break: break-word;
+}
+
+.task-list li.completed {
+  opacity: 0.75;
 }
 
 .task-list li.completed span {
@@ -85,11 +210,32 @@ header p {
   color: #94a3b8;
 }
 
+.empty-state {
+  text-align: center;
+  color: #94a3b8;
+  padding: 2rem 0;
+  font-size: 0.95rem;
+}
+
 .delete-btn {
   background: none;
   border: none;
-  color: #ef4444;
-  font-size: 1.1rem;
+  color: #f43f5e;
+  font-size: 1.2rem;
+  line-height: 1;
   cursor: pointer;
   padding: 4px 8px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.delete-btn:hover {
+  background-color: #ffe4e6;
+  color: #e11d48;
+}
+
+@media (max-width: 480px) {
+  .app-container {
+    padding: 1.5rem 1.25rem;
+  }
 }
