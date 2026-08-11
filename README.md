@@ -45,10 +45,9 @@ An installable, accessible, and secure task management application built with Re
 
 - **XSS Prevention**: Input sanitization function replaces dangerous HTML entities (`<`, `>`, `&`, `"`, `'`).
 - **Input Validation**: Rejects empty strings, limits task length to 100 characters, and prevents duplicate task entries.
+## 💾 Day 7 — Data Storage & User Accounts
 
-## 💾 App Data & User Accounts (Day 7)
-
-- **Authentication Flow**: Supports local user registration and login with password hashing.
-- **Data Persistence**: Uses `localStorage` to separate tasks for each user profile.
-- **Where is data stored?** Stored locally in the browser's `localStorage`.
-- **Who could read it?** Anyone with physical access to the browser's Developer Tools on the target device. No data is sent to external servers.
+- **Where is data stored?** 
+  All user credentials (hashed password markers) and user-specific tasks are saved in the browser's `localStorage`.
+- **Who could read it?** 
+  Anyone with physical access to the device or DevTools on this origin. No external servers or third-party APIs are used.
