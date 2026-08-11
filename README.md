@@ -37,3 +37,18 @@ The output will be generated in the dist folder.
 
 Use this project as the base for your own capstone implementation.
 
+# TrackS — Capstone Task Manager
+
+An installable, accessible, and secure task management application built with React and Vite.
+
+## 🔒 Security & Validation (Day 6)
+
+- **XSS Prevention**: Input sanitization function replaces dangerous HTML entities (`<`, `>`, `&`, `"`, `'`).
+- **Input Validation**: Rejects empty strings, limits task length to 100 characters, and prevents duplicate task entries.
+
+## 💾 App Data & User Accounts (Day 7)
+
+- **Authentication Flow**: Supports local user registration and login with password hashing.
+- **Data Persistence**: Uses `localStorage` to separate tasks for each user profile.
+- **Where is data stored?** Stored locally in the browser's `localStorage`.
+- **Who could read it?** Anyone with physical access to the browser's Developer Tools on the target device. No data is sent to external servers.
