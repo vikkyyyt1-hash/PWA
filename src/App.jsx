@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 
-// Sanitazcja kodu HTML (ochrona XSS)
 const sanitizeInput = (str) => {
   return str
     .replace(/&/g, '&amp;')
@@ -11,7 +10,6 @@ const sanitizeInput = (str) => {
     .replace(/'/g, '&#x27;')
 }
 
-// Haszowanie haseł
 const simpleHash = (str) => {
   let hash = 0
   for (let i = 0; i < str.length; i++) {
@@ -23,12 +21,10 @@ const simpleHash = (str) => {
 }
 
 function App() {
-  // Stany PWA & Offline
   const [deferredPrompt, setDeferredPrompt] = useState(null)
-  const [isInstallable, setIsInstallable] = useState(true) // Domyślnie widoczny dla testów
+  const [isInstallable, setIsInstallable] = useState(true)
   const [isOffline, setIsOffline] = useState(!navigator.onLine)
 
-  // Stany Auth
   const [currentUser, setCurrentUser] = useState(() => {
     return localStorage.getItem('pwa_current_user') || null
   })
@@ -37,12 +33,10 @@ function App() {
   const [passwordInput, setPasswordInput] = useState('')
   const [authError, setAuthError] = useState('')
 
-  // Stany Zadań
   const [tasks, setTasks] = useState([])
   const [input, setInput] = useState('')
   const [taskError, setTaskError] = useState('')
 
-  // Monitorowanie połączenia offline/online
   useEffect(() => {
     const handleOnline = () => setIsOffline(false)
     const handleOffline = () => setIsOffline(true)
@@ -54,7 +48,6 @@ function App() {
     }
   }, [])
 
-  // Pr przechwytywanie promptu instalacyjnego PWA
   useEffect(() => {
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault()
@@ -72,11 +65,10 @@ function App() {
       if (outcome === 'accepted') setIsInstallable(false)
       setDeferredPrompt(null)
     } else {
-      alert('Aplikacja PWA jest już zainstalowana lub przeglądarka nie obsługuje automatycznego promptu.')
+      alert('PWA is already installed or your browser does not support the installation prompt.')
     }
   }
 
-  // Wczytywanie zadań zalogowanego użytkownika
   useEffect(() => {
     if (currentUser) {
       const savedTasks = localStorage.getItem(`pwa_tasks_${currentUser}`)
@@ -89,14 +81,12 @@ function App() {
     }
   }, [currentUser])
 
-  // Zapis zadań w localStorage
   useEffect(() => {
     if (currentUser) {
       localStorage.setItem(`pwa_tasks_${currentUser}`, JSON.stringify(tasks))
     }
   }, [tasks, currentUser])
 
-  // Walidacja i obsługa Logowania / Rejestracji
   const handleAuthSubmit = (e) => {
     e.preventDefault()
     setAuthError('')
@@ -104,30 +94,26 @@ function App() {
     const cleanUsername = sanitizeInput(usernameInput.trim().toLowerCase())
     const password = passwordInput.trim()
 
-    // 1. Sprawdzanie pustych pól
     if (!cleanUsername || !password) {
-      setAuthError('Uzupełnij nazwę użytkownika i hasło.')
+      setAuthError('Please fill in both username and password.')
       return
     }
 
-    // 2. Ograniczenie długości loginu (ochrona przed obciążeniem)
     if (cleanUsername.length < 3 || cleanUsername.length > 20) {
-      setAuthError('Nazwa użytkownika musi mieć od 3 do 20 znaków.')
+      setAuthError('Username must be between 3 and 20 characters.')
       return
     }
 
-    // 3. Wymagana długość hasła
     if (password.length < 6) {
-      setAuthError('Hasło musi mieć co najmniej 6 znaków.')
+      setAuthError('Password must be at least 6 characters long.')
       return
     }
 
     const users = JSON.parse(localStorage.getItem('pwa_users') || '{}')
 
     if (isRegistering) {
-      // 4. Blokada tworzenia istniejącego użytkownika
       if (users[cleanUsername]) {
-        setAuthError('Użytkownik o takiej nazwie już istnieje! Zaloguj się.')
+        setAuthError('User already exists! Please log in.')
         return
       }
 
@@ -136,9 +122,8 @@ function App() {
       localStorage.setItem('pwa_current_user', cleanUsername)
       setCurrentUser(cleanUsername)
     } else {
-      // Logowanie
       if (!users[cleanUsername] || users[cleanUsername] !== simpleHash(password)) {
-        setAuthError('Nieprawidłowa nazwa użytkownika lub hasło.')
+        setAuthError('Invalid username or password.')
         return
       }
       localStorage.setItem('pwa_current_user', cleanUsername)
@@ -154,7 +139,6 @@ function App() {
     setCurrentUser(null)
   }
 
-  // Walidacja i dodawanie zadań
   const addTask = (e) => {
     e.preventDefault()
     setTaskError('')
@@ -162,21 +146,20 @@ function App() {
     const trimmedInput = input.trim()
 
     if (!trimmedInput) {
-      setTaskError('Treść zadania nie może być pusta.')
+      setTaskError('Task cannot be empty.')
       return
     }
 
     if (trimmedInput.length > 80) {
-      setTaskError('Zadanie jest za długie (maksymalnie 80 znaków).')
+      setTaskError('Task is too long (max 80 characters).')
       return
     }
 
-    // Blokada dodawania identycznych zadań
     const isDuplicate = tasks.some(
       (t) => t.text.toLowerCase() === trimmedInput.toLowerCase()
     )
     if (isDuplicate) {
-      setTaskError('To zadanie znajduje się już na Twojej liście.')
+      setTaskError('This task is already in your list.')
       return
     }
 
@@ -201,7 +184,7 @@ function App() {
         
         {isOffline && (
           <div style={{ background: '#f59e0b', color: '#fff', padding: '6px', borderRadius: '6px', fontSize: '0.8rem', marginTop: '10px', fontWeight: 'bold' }}>
-            📡 Tryb Offline (Dane zapisywane lokalnie)
+            📡 Offline Mode (Data saved locally)
           </div>
         )}
 
@@ -210,19 +193,19 @@ function App() {
             onClick={handleInstallClick} 
             style={{ marginTop: '12px', width: '100%', padding: '8px', background: '#10b981', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}
           >
-            📥 Zainstaluj Aplikację PWA
+            📥 Install PWA App
           </button>
         )}
       </header>
 
       {!currentUser ? (
         <div className="auth-box">
-          <h2 style={{ fontSize: '1.2rem', marginBottom: '12px' }}>{isRegistering ? 'Rejestracja' : 'Logowanie'}</h2>
+          <h2 style={{ fontSize: '1.2rem', marginBottom: '12px' }}>{isRegistering ? 'Register' : 'Log In'}</h2>
           
           <form onSubmit={handleAuthSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <input
               type="text"
-              placeholder="Nazwa użytkownika (min. 3 znaki)"
+              placeholder="Username (min. 3 characters)"
               value={usernameInput}
               onChange={(e) => {
                 setUsernameInput(e.target.value)
@@ -233,7 +216,7 @@ function App() {
             />
             <input
               type="password"
-              placeholder="Hasło (min. 6 znaków)"
+              placeholder="Password (min. 6 characters)"
               value={passwordInput}
               onChange={(e) => {
                 setPasswordInput(e.target.value)
@@ -246,7 +229,7 @@ function App() {
               type="submit" 
               style={{ padding: '10px', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', marginTop: '5px' }}
             >
-              {isRegistering ? 'Zarejestruj się' : 'Zaloguj się'}
+              {isRegistering ? 'Sign Up' : 'Log In'}
             </button>
           </form>
 
@@ -264,18 +247,18 @@ function App() {
             }}
             style={{ background: 'none', border: 'none', color: '#7c3aed', cursor: 'pointer', marginTop: '15px', fontSize: '0.85rem', width: '100%', textDecoration: 'underline' }}
           >
-            {isRegistering ? 'Masz już konto? Zaloguj się' : 'Nie masz konta? Zarejestruj się'}
+            {isRegistering ? 'Already have an account? Log in' : "Don't have an account? Register"}
           </button>
         </div>
       ) : (
         <>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', background: '#f1f5f9', padding: '8px 12px', borderRadius: '8px' }}>
-            <span>Zalogowany: <strong>{currentUser}</strong></span>
+            <span>User: <strong>{currentUser}</strong></span>
             <button 
               onClick={handleLogout} 
               style={{ background: '#ef4444', color: '#fff', border: 'none', padding: '5px 10px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}
             >
-              Wyloguj
+              Logout
             </button>
           </div>
 
@@ -287,12 +270,12 @@ function App() {
                 setInput(e.target.value)
                 if (taskError) setTaskError('')
               }}
-              placeholder="Dodaj nowe zadanie..."
+              placeholder="Add a new task..."
               maxLength={80}
               style={{ flex: 1, padding: '10px', border: '1px solid #cbd5e1', borderRadius: '6px' }}
             />
             <button type="submit" style={{ padding: '10px 16px', background: '#7c3aed', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>
-              Dodaj
+              Add
             </button>
           </form>
 
@@ -321,7 +304,7 @@ function App() {
             ))}
           </ul>
 
-          {tasks.length === 0 && <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '0.9rem', marginTop: '15px' }}>Brak zadań dla tego użytkownika.</p>}
+          {tasks.length === 0 && <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '0.9rem', marginTop: '15px' }}>No tasks found for this user.</p>}
         </>
       )}
     </div>
