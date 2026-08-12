@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react'
 
+// Strip control chars, keep safe text only.
+// eslint-disable-next-line no-control-regex
+const sanitize = (s) => s.replace(/[\u0000-\u001f\u007f]/g, '')
+
 export default function TaskSection({ user, onLogout }) {
-  // Każdy użytkownik ma własne zadania w localStorage (klucz: tasks_<nazwa>).
+  // Per-user storage key, e.g. tasks_john.
   const storageKey = `tasks_${user}`
-  // Na starcie wczytujemy zapisane zadania; jeśli nie ma żadnych, zaczynamy z pustą listą.
   const [tasks, setTasks] = useState(() => JSON.parse(localStorage.getItem(storageKey) || '[]'))
   const [input, setInput] = useState('')
   const [error, setError] = useState('')
 
-  // Zapisuje zadania przy każdej zmianie, więc przetrwają odświeżenie / offline.
+  // Persist on every change → survives refresh / offline.
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(tasks))
   }, [tasks, storageKey])
@@ -17,25 +20,24 @@ export default function TaskSection({ user, onLogout }) {
     e.preventDefault()
     setError('')
 
-    // Walidacja zadania: nie może być puste, zbyt długie ani być duplikatem.
-    const text = input.trim()
+    // Validate + sanitise input, drop duplicates.
+    const text = sanitize(input.trim())
     if (!text) return setError('Task cannot be empty.')
-    if (text.length > 60) return setError('Task too long (max 60 chars).')
+    if (text.length > 60) return setError('Task too long (max 60).')
     if (tasks.some(t => t.text.toLowerCase() === text.toLowerCase())) {
       return setError('Task already exists.')
     }
 
-    // Dodajemy zadanie na koniec listy i czyścimy pole wpisywania.
     setTasks([...tasks, { id: Date.now(), text, done: false }])
     setInput('')
   }
 
-  // Odznaczanie/oznaczanie zadania jako zrobionego.
+  // Toggle done state.
   const toggleTask = (id) => {
     setTasks(tasks.map(t => t.id === id ? { ...t, done: !t.done } : t))
   }
 
-  // Usuwanie zadania z listy.
+  // Remove task.
   const deleteTask = (id) => {
     setTasks(tasks.filter(t => t.id !== id))
   }

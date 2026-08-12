@@ -51,3 +51,14 @@ Spróbuj tego samego w polu "Username". Tutaj też tekst jest tylko wyświetlany
 ## 5. Wniosek
 
 Najsłabszy punkt aplikacji to **autoryzacja po stronie klienta** (A01, A07): `localStorage` czyta każdy, kto ma dostęp do urządzenia, a hash SHA-256 nie jest wystarczająco odporny na hasła. Wnioski te idą do GitHub Issues i będą podstawą docierania aplikacji w Dniu 9 (harden).
+
+# Day 9 — Harden your app: co faktycznie poprawiliśmy
+
+| Obszar | Co zrobiliśmy |
+|---|---|
+| Walidacja wejścia | Username tylko `a-z 0-9 _` (3–20 znaków); hasło 6–64 znaków; zadanie max 60 znaków + blokada duplikatów. Nigdy nie ufamy przeglądarce. |
+| Sanitizacja | Ze wszystkich pól wycinamy znaki sterujące (control chars) przed zapisem. |
+| Escape output | React eskapuje cały output. **Automatyczny test** `npm run check-security` wpisuje `<script>alert('xss')</script>`, rejestruje dialog i sprawdza, że żaden się nie pojawił → `PASS — input stays text`. |
+| Autoryzacja | Hasło nigdy nie jest zapisane: losowa sól (salt) + SHA-256. Identyczne hasła dają różne hashe. Brak sekretów we froncie. |
+| HTTPS + nagłówki | GitHub Pages = HTTPS. GitHub Pages nie pozwala ustawić nagłówków serwera, więc dodaliśmy przez `<meta>`: `Content-Security-Policy` (tylko własne skrypty), `X-Content-Type-Options: nosniff`, `referrer: no-referrer`. |
+| Testy | `npm run check-security` (XSS + CSP) i `npm run check-offline` (offline) — oba przechodzą automatycznie. |

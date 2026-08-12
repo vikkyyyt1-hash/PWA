@@ -5,14 +5,14 @@ import TaskSection from './TaskSection'
 import SecurityNotes from './SecurityNotes'
 
 export default function App() {
-  // Zalogowany użytkownik (zapisany w localStorage), stan sieci i zdarzenie instalacji PWA.
+  // App state: who is logged in, network, PWA install prompt.
   const [user, setUser] = useState(() => localStorage.getItem('pwa_user'))
   const [isOffline, setIsOffline] = useState(!navigator.onLine)
   const [deferredPrompt, setDeferredPrompt] = useState(null)
   const [installMsg, setInstallMsg] = useState('')
   const [showSecurity, setShowSecurity] = useState(false)
 
-  // Nasłuchujemy zdarzeń internetu: online/offline zmieniają komunikat.
+  // Track online/offline → show badge.
   useEffect(() => {
     const setStatus = () => setIsOffline(!navigator.onLine)
     window.addEventListener('online', setStatus)
@@ -23,6 +23,7 @@ export default function App() {
     }
   }, [])
 
+  // Save the PWA install event (fires automatically in supporting browsers).
   useEffect(() => {
     const handlePrompt = (e) => {
       e.preventDefault()
@@ -32,10 +33,10 @@ export default function App() {
     return () => window.removeEventListener('beforeinstallprompt', handlePrompt)
   }, [])
 
-  // Instalacja aplikacji na telefon/komputer.
+  // Install the app on the phone/desktop.
   const handleInstall = async () => {
     if (!deferredPrompt) {
-      setInstallMsg('No install prompt available — use your browser menu: install app option.')
+      setInstallMsg('No install prompt — use browser menu → install app.')
       return
     }
     setInstallMsg('')
@@ -54,6 +55,7 @@ export default function App() {
     setUser(null)
   }
 
+  // Logged-in → tasks, otherwise → login form.
   return (
     <div className="app-container">
       <header>
