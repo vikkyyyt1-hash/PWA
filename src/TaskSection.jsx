@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 
 export default function TaskSection({ user, onLogout }) {
+  // Każdy użytkownik ma własne zadania w localStorage (klucz: tasks_<nazwa>).
   const storageKey = `tasks_${user}`
+  // Na starcie wczytujemy zapisane zadania; jeśli nie ma żadnych, zaczynamy z pustą listą.
   const [tasks, setTasks] = useState(() => JSON.parse(localStorage.getItem(storageKey) || '[]'))
   const [input, setInput] = useState('')
   const [error, setError] = useState('')
@@ -15,6 +17,7 @@ export default function TaskSection({ user, onLogout }) {
     e.preventDefault()
     setError('')
 
+    // Walidacja zadania: nie może być puste, zbyt długie ani być duplikatem.
     const text = input.trim()
     if (!text) return setError('Task cannot be empty.')
     if (text.length > 60) return setError('Task too long (max 60 chars).')
@@ -22,14 +25,17 @@ export default function TaskSection({ user, onLogout }) {
       return setError('Task already exists.')
     }
 
+    // Dodajemy zadanie na koniec listy i czyścimy pole wpisywania.
     setTasks([...tasks, { id: Date.now(), text, done: false }])
     setInput('')
   }
 
+  // Odznaczanie/oznaczanie zadania jako zrobionego.
   const toggleTask = (id) => {
     setTasks(tasks.map(t => t.id === id ? { ...t, done: !t.done } : t))
   }
 
+  // Usuwanie zadania z listy.
   const deleteTask = (id) => {
     setTasks(tasks.filter(t => t.id !== id))
   }
