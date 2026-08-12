@@ -41,14 +41,11 @@ Use this project as the base for your own capstone implementation.
 
 An installable, accessible, and secure task management application built with React and Vite.
 
-## 🔒 Security & Validation (Day 6)
-
-- **XSS Prevention**: Input sanitization function replaces dangerous HTML entities (`<`, `>`, `&`, `"`, `'`).
-- **Input Validation**: Rejects empty strings, limits task length to 100 characters, and prevents duplicate task entries.
 ## 🔒 Security & PWA Features (Day 6 & Day 7)
 
 - **Installable PWA**: Integrated `beforeinstallprompt` listener providing a native "Install App" button.
 - **Offline Support**: Automatically detects offline status (`navigator.onLine`) and retains full functionality using `localStorage`.
-- **Input Sanitization**: Replaces HTML entities (`<`, `>`, `&`, `"`, `'`) to prevent XSS.
+- **Hashed Passwords**: Passwords are SHA-256 hashed (`crypto.subtle`) before storage — the plaintext is never written to `localStorage`, only a hashed marker is compared at login.
+- **XSS Prevention**: React escapes all rendered output by default, so a task containing `<script>` is shown as harmless text, never executed.
 - **Validation**: Enforces char limits, blocks empty entries, and eliminates duplicate tasks.
-- **Data Storage**: User credentials and tasks are isolated per account in `localStorage`.
+- **Data Storage**: User credentials (hashes) and tasks are isolated per account in `localStorage`.

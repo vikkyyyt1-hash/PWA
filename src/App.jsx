@@ -1,6 +1,13 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 
+// Zamienia hasło na hash, żeby w localStorage nigdy nie był zapisany zwykły tekst.
+async function hashPassword(password) {
+  const data = new TextEncoder().encode(password)
+  const digest = await crypto.subtle.digest('SHA-256', data)
+  return Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('')
+}
+
 export default function App() {
   // 1. PWA & Offline Status
   const [deferredPrompt, setDeferredPrompt] = useState(null)
@@ -64,7 +71,7 @@ export default function App() {
   }
 
   // Logika autoryzacji (Rejestracja / Logowanie)
-  const handleAuth = (e) => {
+  const handleAuth = async (e) => {
     e.preventDefault()
     setAuthError('')
 
@@ -75,14 +82,16 @@ export default function App() {
     if (cleanUser.length < 3) return setAuthError('Username must be at least 3 chars.')
     if (cleanPass.length < 6) return setAuthError('Password must be at least 6 chars.')
 
+    // Porównujemy tylko hashe, nigdy nie zapisujemy samego hasła.
+    const hash = await hashPassword(cleanPass)
     const db = JSON.parse(localStorage.getItem('pwa_db') || '{}')
 
     if (isRegister) {
       if (db[cleanUser]) return setAuthError('User already exists!')
-      db[cleanUser] = cleanPass
+      db[cleanUser] = hash
       localStorage.setItem('pwa_db', JSON.stringify(db))
     } else {
-      if (db[cleanUser] !== cleanPass) return setAuthError('Invalid credentials.')
+      if (db[cleanUser] !== hash) return setAuthError('Invalid credentials.')
     }
 
     localStorage.setItem('pwa_user', cleanUser)
@@ -122,68 +131,66 @@ export default function App() {
   }
 
   return (
-    <div style={{ maxWidth: '400px', margin: '30px auto', padding: '20px', fontFamily: 'sans-serif' }}>
-      <header style={{ textAlign: 'center' }}>
-        <h2>📱 PWA Task App</h2>
-        {isOffline && <p style={{ color: 'orange', fontWeight: 'bold' }}>📡 Offline Mode</p>}
+    <div className="app-container">
+      <header>
+        <h1>📱 PWA Task App</h1>
+        {isOffline && <span className="offline-badge">📡 Offline Mode</span>}
         {deferredPrompt && (
-          <button onClick={handleInstall} style={{ width: '100%', padding: '8px', marginBottom: '10px' }}>
+          <button className="install-btn" onClick={handleInstall}>
             📥 Install App
           </button>
         )}
       </header>
 
       {!user ? (
-        <form onSubmit={handleAuth} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <form className="auth-form" onSubmit={handleAuth}>
           <h3>{isRegister ? 'Register' : 'Log In'}</h3>
-          <input 
-            placeholder="Username" 
-            value={username} 
-            onChange={e => setUsername(e.target.value)} 
+          <input
+            placeholder="Username"
+            value={username}
+            onChange={e => setUsername(e.target.value)}
           />
-          <input 
-            type="password" 
-            placeholder="Password" 
-            value={password} 
-            onChange={e => setPassword(e.target.value)} 
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
           />
-          <button type="submit">{isRegister ? 'Sign Up' : 'Log In'}</button>
-          {authError && <p style={{ color: 'red', fontSize: '0.85rem' }}>⚠️ {authError}</p>}
-          <button type="button" onClick={() => setIsRegister(!isRegister)} style={{ background: 'none', border: 'none', color: 'blue', cursor: 'pointer' }}>
+          <button className="btn-primary" type="submit">{isRegister ? 'Sign Up' : 'Log In'}</button>
+          {authError && <p className="error-msg">⚠️ {authError}</p>}
+          <button className="switch-btn" type="button" onClick={() => setIsRegister(!isRegister)}>
             {isRegister ? 'Switch to Log In' : 'Switch to Register'}
           </button>
         </form>
       ) : (
         <>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+          <div className="user-bar">
             <span>User: <strong>{user}</strong></span>
-            <button onClick={handleLogout}>Logout</button>
+            <button className="btn-secondary" onClick={handleLogout}>Logout</button>
           </div>
 
-          <form onSubmit={addTask} style={{ display: 'flex', gap: '5px' }}>
-            <input 
-              style={{ flex: 1 }} 
-              placeholder="New task..." 
-              value={input} 
-              onChange={e => setInput(e.target.value)} 
+          <form className="task-form" onSubmit={addTask}>
+            <input
+              placeholder="New task..."
+              value={input}
+              onChange={e => setInput(e.target.value)}
             />
-            <button type="submit">Add</button>
+            <button className="btn-primary" type="submit">Add</button>
           </form>
-          {taskError && <p style={{ color: 'red', fontSize: '0.85rem' }}>⚠️ {taskError}</p>}
+          {taskError && <p className="error-msg">⚠️ {taskError}</p>}
 
-          <ul style={{ listStyle: 'none', padding: 0, marginTop: '15px' }}>
-            {tasks.map(t => (
-              <li key={t.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '6px 0', borderBottom: '1px solid #ddd' }}>
-                <span 
-                  onClick={() => toggleTask(t.id)} 
-                  style={{ textDecoration: t.done ? 'line-through' : 'none', cursor: 'pointer' }}
-                >
-                  {t.text}
-                </span>
-                <button onClick={() => deleteTask(t.id)}>✕</button>
-              </li>
-            ))}
-          </ul>
+          {tasks.length === 0 ? (
+            <p className="empty-state">No tasks yet. Add your first one!</p>
+          ) : (
+            <ul className="task-list">
+              {tasks.map(t => (
+                <li key={t.id} className={t.done ? 'completed' : ''}>
+                  <span onClick={() => toggleTask(t.id)}>{t.text}</span>
+                  <button className="delete-btn" onClick={() => deleteTask(t.id)}>✕</button>
+                </li>
+              ))}
+            </ul>
+          )}
         </>
       )}
     </div>
