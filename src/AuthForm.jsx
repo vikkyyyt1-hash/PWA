@@ -1,11 +1,5 @@
 import { useState } from 'react'
-
-// Zamienia hasło na hash, żeby w localStorage nigdy nie był zapisany sam tekst.
-async function hashPassword(password) {
-  const data = new TextEncoder().encode(password)
-  const digest = await crypto.subtle.digest('SHA-256', data)
-  return Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('')
-}
+import { randomSalt, hashPassword } from './security.js'
 
 export default function AuthForm({ onLogin }) {
   const [isRegister, setIsRegister] = useState(false)
@@ -17,26 +11,26 @@ export default function AuthForm({ onLogin }) {
     e.preventDefault()
     setError('')
 
-    // Oczyszczamy dane użytkownika przed zapisaniem.
+    // Never trust the browser: validate + normalise first.
     const name = username.trim().toLowerCase()
     const pass = password.trim()
+    if (!name || !pass) return setError('Fill in all fields.')
+    if (!/^[a-z0-9_]{3,20}$/.test(name)) return setError('Username: 3-20 chars (a-z, 0-9, _).')
+    if (pass.length < 6 || pass.length > 64) return setError('Password must be 6-64 chars.')
 
-    // Walidacja formularza: pole nie może być puste, a hasło musi być wystarczająco długie.
-    if (!name || !pass) return setError('Enter username and password.')
-    if (name.length < 3) return setError('Username must be at least 3 chars.')
-    if (pass.length < 6) return setError('Password must be at least 6 chars.')
-
-    // Zapisujemy tylko hash, więc w localStorage nigdy nie ma prawdziwego hasła.
-    const hash = await hashPassword(pass)
     const db = JSON.parse(localStorage.getItem('pwa_db') || '{}')
 
-    // Rejestracja: dodaj nowego użytkownika. Logowanie: porównaj hashe.
     if (isRegister) {
-      if (db[name]) return setError('User already exists!')
-      db[name] = hash
+      if (db[name]) return setError('User already exists.')
+      // Store only salt + hash, never the plaintext password.
+      const salt = randomSalt()
+      db[name] = { salt, hash: await hashPassword(pass, salt) }
       localStorage.setItem('pwa_db', JSON.stringify(db))
-    } else if (db[name] !== hash) {
-      return setError('Invalid credentials.')
+    } else {
+      const acc = db[name]
+      if (!acc || (await hashPassword(pass, acc.salt)) !== acc.hash) {
+        return setError('Wrong username or password.')
+      }
     }
 
     onLogin(name)

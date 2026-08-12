@@ -59,3 +59,11 @@ An installable, accessible, and secure task management application built with Re
 ## 🔐 Security Audit (Day 8)
 
 OWASP Top 10 summary, our vulnerability assessment, XSS test and DevTools notes: [docs/security-notes.md](docs/security-notes.md)
+
+## 🛡️ Hardening (Day 9)
+
+Input validation + sanitisation, output escaping (proven by an automated XSS test), salted password hashing, security headers via meta tags (CSP, nosniff, no-referrer). Verify with:
+
+```bash
+npm run check-security
+```
