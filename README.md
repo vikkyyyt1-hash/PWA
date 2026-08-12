@@ -49,3 +49,7 @@ An installable, accessible, and secure task management application built with Re
 - **XSS Prevention**: React escapes all rendered output by default, so a task containing `<script>` is shown as harmless text, never executed.
 - **Validation**: Enforces char limits, blocks empty entries, and eliminates duplicate tasks.
 - **Data Storage**: User credentials (hashes) and tasks are isolated per account in `localStorage`.
+
+## 🔐 Security Audit (Day 8)
+
+OWASP Top 10 summary, our vulnerability assessment, XSS test and DevTools notes: [docs/security-notes.md](docs/security-notes.md)
