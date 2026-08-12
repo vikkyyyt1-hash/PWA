@@ -20,6 +20,12 @@ npm install
 npm run dev
 ```
 
+Verify the offline mode really works (builds and tests in Chrome):
+
+```bash
+npm run check-offline
+```
+
 ## Planning artifacts
 
 - Issues: [docs/issues.md](docs/issues.md)

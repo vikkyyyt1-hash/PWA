@@ -9,6 +9,7 @@ export default function App() {
   const [user, setUser] = useState(() => localStorage.getItem('pwa_user'))
   const [isOffline, setIsOffline] = useState(!navigator.onLine)
   const [deferredPrompt, setDeferredPrompt] = useState(null)
+  const [installMsg, setInstallMsg] = useState('')
   const [showSecurity, setShowSecurity] = useState(false)
 
   // Nasłuchujemy zdarzeń internetu: online/offline zmieniają komunikat.
@@ -31,8 +32,13 @@ export default function App() {
     return () => window.removeEventListener('beforeinstallprompt', handlePrompt)
   }, [])
 
+  // Instalacja aplikacji na telefon/komputer.
   const handleInstall = async () => {
-    if (!deferredPrompt) return
+    if (!deferredPrompt) {
+      setInstallMsg('No install prompt available — use your browser menu: install app option.')
+      return
+    }
+    setInstallMsg('')
     deferredPrompt.prompt()
     const { outcome } = await deferredPrompt.userChoice
     if (outcome === 'accepted') setDeferredPrompt(null)
@@ -53,9 +59,8 @@ export default function App() {
       <header>
         <h1>📱 PWA Task App</h1>
         {isOffline && <span className="offline-badge">📡 Offline Mode</span>}
-        {deferredPrompt && (
-          <button className="install-btn" onClick={handleInstall}>📥 Install App</button>
-        )}
+        <button className="install-btn" onClick={handleInstall}>📥 Download App</button>
+        {installMsg && <p className="error-msg">{installMsg}</p>}
         <button className="security-toggle" onClick={() => setShowSecurity(!showSecurity)}>
           🔒 Security Notes
         </button>

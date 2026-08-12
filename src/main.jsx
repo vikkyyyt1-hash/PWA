@@ -8,3 +8,9 @@ createRoot(document.getElementById('root')).render(
     <App />
   </StrictMode>,
 )
+
+// Rejestrujemy service worker tylko w wersji produkcyjnej,
+// dzięki niemu aplikacja działa offline i może być zainstalowana.
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  navigator.serviceWorker.register('./sw.js')
+}
