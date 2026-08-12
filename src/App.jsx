@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import AuthForm from './AuthForm'
 import TaskSection from './TaskSection'
+import SecurityNotes from './SecurityNotes'
 
 export default function App() {
   // Zalogowany użytkownik (zapisany w localStorage), stan sieci i zdarzenie instalacji PWA.
   const [user, setUser] = useState(() => localStorage.getItem('pwa_user'))
   const [isOffline, setIsOffline] = useState(!navigator.onLine)
   const [deferredPrompt, setDeferredPrompt] = useState(null)
+  const [showSecurity, setShowSecurity] = useState(false)
 
   // Nasłuchujemy zdarzeń internetu: online/offline zmieniają komunikat.
   useEffect(() => {
@@ -20,7 +22,6 @@ export default function App() {
     }
   }, [])
 
-  // Zapisanie zdarzenia instalacji PWA, żeby przycisk "Install" pojawił się tylko, gdy przeglądarka je wyśle.
   useEffect(() => {
     const handlePrompt = (e) => {
       e.preventDefault()
@@ -30,7 +31,6 @@ export default function App() {
     return () => window.removeEventListener('beforeinstallprompt', handlePrompt)
   }, [])
 
-  // Pokaż przeglądarce okno instalacji aplikacji.
   const handleInstall = async () => {
     if (!deferredPrompt) return
     deferredPrompt.prompt()
@@ -48,7 +48,6 @@ export default function App() {
     setUser(null)
   }
 
-  // Główna zasada: zalogowany użytkownik widzi zadania, niezalogowany formularz logowania.
   return (
     <div className="app-container">
       <header>
@@ -57,11 +56,17 @@ export default function App() {
         {deferredPrompt && (
           <button className="install-btn" onClick={handleInstall}>📥 Install App</button>
         )}
+        <button className="security-toggle" onClick={() => setShowSecurity(!showSecurity)}>
+          🔒 Security Notes
+        </button>
       </header>
 
       {user
         ? <TaskSection user={user} onLogout={handleLogout} />
-        : <AuthForm onLogin={handleLogin} />}
+        : <AuthForm onLogin={handleLogin} />
+      }
+
+      {showSecurity && <SecurityNotes />}
     </div>
   )
 }
