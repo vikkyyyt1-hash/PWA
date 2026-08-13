@@ -40,7 +40,7 @@ export default function AuthForm({ onLogin }) {
 
   return (
     <form className="auth-form" onSubmit={handleSubmit}>
-      <h3>{isRegister ? 'Register' : 'Log In'}</h3>
+      <h2>{isRegister ? 'Register' : 'Log In'}</h2>
       <input
         placeholder="Username"
         value={username}

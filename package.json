@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "deploy": "npm run build",
     "check-offline": "npm run build && node scripts/check-offline.mjs",
-    "check-security": "npm run build && node scripts/check-security.mjs"
+    "check-security": "npm run build && node scripts/check-security.mjs",
+    "check-lighthouse": "node scripts/check-lighthouse.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
@@ -28,6 +29,7 @@
     "eslint-plugin-react-refresh": "^0.5.3",
     "gh-pages": "^6.3.0",
     "globals": "^17.7.0",
+    "lighthouse": "^13.4.1",
     "puppeteer-core": "^25.6.0",
     "vite": "^8.2.0"
   }

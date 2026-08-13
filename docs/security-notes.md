@@ -62,3 +62,48 @@ Najsłabszy punkt aplikacji to **autoryzacja po stronie klienta** (A01, A07): `l
 | Autoryzacja | Hasło nigdy nie jest zapisane: losowa sól (salt) + SHA-256. Identyczne hasła dają różne hashe. Brak sekretów we froncie. |
 | HTTPS + nagłówki | GitHub Pages = HTTPS. GitHub Pages nie pozwala ustawić nagłówków serwera, więc dodaliśmy przez `<meta>`: `Content-Security-Policy` (tylko własne skrypty), `X-Content-Type-Options: nosniff`, `referrer: no-referrer`. |
 | Testy | `npm run check-security` (XSS + CSP) i `npm run check-offline` (offline) — oba przechodzą automatycznie. |
+
+# Day 10 — Deploy, audit & plan the capstone
+
+## 1. Wdrożenie na żywo (HTTPS)
+
+- Live URL: **https://vikkyyyt1-hash.github.io/PWA/** (GitHub Pages, HTTPS enforced, deploy automatyczny: `npm run build` + `npx gh-pages -d dist --no-history`).
+- Instalacja na telefonie: w przeglądarce mobilnej otwórz URL → menu przeglądarki → "Dodaj do ekranu głównego / Install app" (lub przycisk 📥 Download App w aplikacji).
+
+## 2. Self-audyt OWASP Top 10 (wnioski dla naszej aplikacji)
+
+| Ryzyko | Status | Wniosek |
+|---|---|---|
+| A01 Access Control | ⚠️ | Auth tylko po stronie klienta — `localStorage` czyta każdy z dostępem do urządzenia. **Issue #12.** |
+| A02 Crypto | ⚠️ | Salt + SHA-256 (dobrze jak na demo), ale SHA-256 jest szybkie — dla prawdziwych haseł lepsze bcrypt/argon2. |
+| A03 Injection/XSS | ✅ | React eskapuje output; automatyczny test `check-security` potwierdza: input nigdy nie wykona się jako kod. |
+| A04 Insecure Design | ⚠️ | Aplikacja edukacyjna — celowo bez serwera. |
+| A05 Misconfiguration | ✅ | HTTPS + CSP (meta) + nosniff + no-referrer. |
+| A06 Components | ✅ | `npm audit`: 0 podatności. |
+| A07 Auth | ⚠️ | Reguły haseł + hashowanie są, ale logowanie lokalne, bez limitu prób. **Issue #12.** |
+| A08 Integrity | ✅ | Brak danych z zewnątrz; weryfikowalne pakiety. |
+| A09 Logging | ❌ | Brak logów — świadoma luka demo. **Issue #13.** |
+| A10 SSRF | ✅ | Nie dotyczy (brak serwera). |
+
+## 3. Lighthouse na żywej stronie (Day 10)
+
+Wyniki po poprawkach (skrypt: `npm run check-lighthouse`, raport: `docs/lighthouse.json`):
+
+| Kategoria | Wynik |
+|---|---|
+| Performance | **100** |
+| Accessibility | **100** |
+| Best Practices | **100** |
+| SEO | **100** |
+
+Uwaga: Lighthouse 12 usunął kategorię PWA — instalowalność weryfikujemy osobno: `manifest.json` + `sw.js` + `npm run check-offline` (PASS).
+
+### Co poprawiliśmy po pierwszym audycie
+- Kontrast przycisku install (2.53:1 → 4.5:1+) — ciemniejszy zielony `#047857`.
+- Brak `meta description` (SEO) — dodany.
+- Brak landmarku `<main>` i przeskakujące nagłówki (h1→h3) — `<main>` + `<h2>`.
+
+## 4. GitHub Issues i scope capstone
+
+- Issues z ustaleń: **#9–#11 zamknięte (naprawione), #12–#15 otwarte** (pełna lista: `docs/issues.md`).
+- **Capstone (Week 3)**: *Secure installable app* — ta aplikacja jako projekt: PWA z kontami, offline i twardym modelowaniem bezpieczeństwa. Stretch goal: **rola admina** (Issue #14).

@@ -67,3 +67,13 @@ Input validation + sanitisation, output escaping (proven by an automated XSS tes
 ```bash
 npm run check-security
 ```
+
+## 🚀 Live & audit (Day 10)
+
+- **Live**: https://vikkyyyt1-hash.github.io/PWA/ (HTTPS)
+- **Lighthouse**: Performance 100 · Accessibility 100 · Best Practices 100 · SEO 100 (`npm run check-lighthouse`)
+- **Self-audit** OWASP Top 10 + findings → Issues: [docs/security-notes.md](docs/security-notes.md), [docs/issues.md](docs/issues.md)
+
+## 🎯 Capstone scope (Week 3)
+
+**Secure installable app** — this project, built out: a PWA with local accounts, offline-first task management and a documented security model hardened against the OWASP Top 10. Stretch goal: role-based access (user vs admin). See issues #12–#15.

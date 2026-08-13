@@ -57,7 +57,7 @@ export default function App() {
 
   // Logged-in → tasks, otherwise → login form.
   return (
-    <div className="app-container">
+    <main className="app-container">
       <header>
         <h1>📱 PWA Task App</h1>
         {isOffline && <span className="offline-badge">📡 Offline Mode</span>}
@@ -74,6 +74,6 @@ export default function App() {
       }
 
       {showSecurity && <SecurityNotes />}
-    </div>
+    </main>
   )
 }
