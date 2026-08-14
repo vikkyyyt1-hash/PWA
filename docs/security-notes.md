@@ -107,3 +107,18 @@ Uwaga: Lighthouse 12 usunął kategorię PWA — instalowalność weryfikujemy o
 
 - Issues z ustaleń: **#9–#11 zamknięte (naprawione), #12–#15 otwarte** (pełna lista: `docs/issues.md`).
 - **Capstone (Week 3)**: *Secure installable app* — ta aplikacja jako projekt: PWA z kontami, offline i twardym modelowaniem bezpieczeństwa. Stretch goal: **rola admina** (Issue #14).
+
+# Day 11–12 — Re-audyt nowych funkcji (OWASP Top 10)
+
+Nowe funkcje capstone: **rola user/admin** (Admin Panel) i **lokalny audit log** (`pwa_log`).
+
+| Ryzyko | Wynik | Dlaczego |
+|---|---|---|
+| A01 Access Control | ⚠️→✅ (demo) | Rola pochodzi **tylko z rekordu konta**, nigdy z inputu — przycisk/panel admina renderowany wyłącznie dla `role === 'admin'`. **Limit:** `localStorage` można edytować w DevTools (rola nie jest chroniona na kliencie — w produkcji rola musi przyjść z serwera/sesji). Udokumentowane w Issue #12. |
+| A03 XSS | ✅ | Nowe dane (nazwy userów, zdarzenia logu) renderowane przez React = escapowane. Automatyczny test `check-security` nadal **PASS** po zmianach. |
+| A06 Components | ✅ | `npm audit`: 0 podatności. |
+| A09 Logging | ⚠️→✅ (częściowo) | Audit log `pwa_log` rejestruje register/login/logout (ostatnie 50 wpisów) i jest widoczny w Admin Panel — to dopiero start; nadal brak zdalnego monitoringu. |
+
+**Walidacja nowych wejść:** nie dodano żadnych nowych pól użytkownika (rola i log są generowane przez kod). Istniejące pola nadal walidowane i sanitizowane. Edge-casey: uszkodzony JSON w `localStorage` → aplikacja się nie wysypuje (`readJSON`); konta w złym formacie → logowanie bezpiecznie odrzucane; zadania, które nie są tablicą → ignorowane.
+
+Testy po zmianach: `check-security` PASS, `check-offline` PASS, Lighthouse 100/100/100/100 (bez regresji).
