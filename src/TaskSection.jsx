@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { readJSON, writeJSON } from './security.js'
 
 // Strip control chars, keep safe text only.
 // eslint-disable-next-line no-control-regex
@@ -7,13 +8,16 @@ const sanitize = (s) => s.replace(/[\u0000-\u001f\u007f]/g, '')
 export default function TaskSection({ user, onLogout }) {
   // Per-user storage key, e.g. tasks_john.
   const storageKey = `tasks_${user}`
-  const [tasks, setTasks] = useState(() => JSON.parse(localStorage.getItem(storageKey) || '[]'))
+  const [tasks, setTasks] = useState(() => {
+    const saved = readJSON(storageKey, [])
+    return Array.isArray(saved) ? saved : []
+  })
   const [input, setInput] = useState('')
   const [error, setError] = useState('')
 
   // Persist on every change → survives refresh / offline.
   useEffect(() => {
-    localStorage.setItem(storageKey, JSON.stringify(tasks))
+    writeJSON(storageKey, tasks)
   }, [tasks, storageKey])
 
   const addTask = (e) => {
