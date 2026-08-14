@@ -76,4 +76,8 @@ npm run check-security
 
 ## 🎯 Capstone scope (Week 3)
 
-**Secure installable app** — this project, built out: a PWA with local accounts, offline-first task management and a documented security model hardened against the OWASP Top 10. Stretch goal: role-based access (user vs admin). See issues #12–#15.
+**Secure installable app** — this project, built out: a PWA with local accounts, offline-first task management and a documented security model hardened against the OWASP Top 10.
+
+Implemented (Day 11–12): **role-based access** — the first registered account is `admin` and sees the Admin Panel (users + task counts + local audit log); role comes only from the account record, never from user input. Edge cases handled: corrupt `localStorage` never crashes the app, malformed accounts fail login safely.
+
+Issues: #12 (open, client-side auth limitation), #15 (docs brief).
