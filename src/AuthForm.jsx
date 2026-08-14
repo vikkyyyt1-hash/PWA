@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { randomSalt, hashPassword } from './security.js'
+import { randomSalt, hashPassword, readJSON, writeJSON, logEvent } from './security.js'
 
 export default function AuthForm({ onLogin }) {
   const [isRegister, setIsRegister] = useState(false)
@@ -18,22 +18,28 @@ export default function AuthForm({ onLogin }) {
     if (!/^[a-z0-9_]{3,20}$/.test(name)) return setError('Username: 3-20 chars (a-z, 0-9, _).')
     if (pass.length < 6 || pass.length > 64) return setError('Password must be 6-64 chars.')
 
-    const db = JSON.parse(localStorage.getItem('pwa_db') || '{}')
+    const db = readJSON('pwa_db', {})
 
     if (isRegister) {
       if (db[name]) return setError('User already exists.')
-      // Store only salt + hash, never the plaintext password.
+      // Role comes from the account record, never from user input.
+      // The first account becomes admin; later accounts are regular users.
+      const role = Object.keys(db).length === 0 ? 'admin' : 'user'
       const salt = randomSalt()
-      db[name] = { salt, hash: await hashPassword(pass, salt) }
-      localStorage.setItem('pwa_db', JSON.stringify(db))
+      db[name] = { salt, hash: await hashPassword(pass, salt), role }
+      writeJSON('pwa_db', db)
+      logEvent(`register: ${name} (${role})`)
+      onLogin({ name, role })
     } else {
+      // Malformed or old-format accounts must not crash or grant access.
       const acc = db[name]
-      if (!acc || (await hashPassword(pass, acc.salt)) !== acc.hash) {
+      if (!acc || typeof acc.hash !== 'string' || (await hashPassword(pass, acc.salt || '')) !== acc.hash) {
         return setError('Wrong username or password.')
       }
+      logEvent(`login: ${name}`)
+      onLogin({ name, role: acc.role || 'user' })
     }
 
-    onLogin(name)
     setUsername('')
     setPassword('')
   }
