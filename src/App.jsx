@@ -3,10 +3,13 @@ import './App.css'
 import AuthForm from './AuthForm'
 import TaskSection from './TaskSection'
 import SecurityNotes from './SecurityNotes'
+import AdminPanel from './AdminPanel'
+import { logEvent } from './security.js'
 
 export default function App() {
-  // App state: who is logged in, network, PWA install prompt.
+  // App state: who is logged in, their role, network, PWA install prompt.
   const [user, setUser] = useState(() => localStorage.getItem('pwa_user'))
+  const [role, setRole] = useState(() => localStorage.getItem('pwa_role'))
   const [isOffline, setIsOffline] = useState(!navigator.onLine)
   const [deferredPrompt, setDeferredPrompt] = useState(null)
   const [installMsg, setInstallMsg] = useState('')
@@ -45,14 +48,19 @@ export default function App() {
     if (outcome === 'accepted') setDeferredPrompt(null)
   }
 
-  const handleLogin = (name) => {
+  const handleLogin = ({ name, role: r }) => {
     localStorage.setItem('pwa_user', name)
+    localStorage.setItem('pwa_role', r)
     setUser(name)
+    setRole(r)
   }
 
   const handleLogout = () => {
+    logEvent(`logout: ${user}`)
     localStorage.removeItem('pwa_user')
+    localStorage.removeItem('pwa_role')
     setUser(null)
+    setRole(null)
   }
 
   // Logged-in → tasks, otherwise → login form.
@@ -73,6 +81,7 @@ export default function App() {
         : <AuthForm onLogin={handleLogin} />
       }
 
+      {user && role === 'admin' && <AdminPanel />}
       {showSecurity && <SecurityNotes />}
     </main>
   )

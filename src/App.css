@@ -317,3 +317,43 @@ header p {
   color: #475569;
   white-space: nowrap;
 }
+
+.admin-section {
+  margin-top: 1.75rem;
+  padding: 1.25rem;
+  border: 1px dashed #7c3aed;
+  border-radius: 12px;
+  background: #faf5ff;
+}
+
+.admin-section h2 {
+  margin: 0 0 0.75rem;
+  color: #6d28d9;
+  font-size: 1.1rem;
+}
+
+.admin-section h3 {
+  margin: 1rem 0 0.5rem;
+  color: #334155;
+  font-size: 0.95rem;
+}
+
+.admin-role {
+  color: #7c3aed;
+  font-style: normal;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.admin-count {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.admin-section code {
+  background: #ede9fe;
+  color: #5b21b6;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
