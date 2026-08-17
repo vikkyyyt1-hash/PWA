@@ -18,49 +18,11 @@ A small but real Progressive Web App (PWA): sign up, keep a task list, install i
 - Salted password hashing — plaintext never touches `localStorage`
 - Lighthouse: Performance / Accessibility / Best Practices / SEO = **100/100/100/100**
 
-## How to run it
 
-```bash
-# 1. clone
-git clone https://github.com/vikkyyyt1-hash/PWA.git
-cd PWA
-
-# 2. install dependencies
-npm install
-
-# 3. run the dev server (http://localhost:5173)
-npm run dev
-
-# 4. production build + preview
-npm run build
-npm run preview
 ```
 
 First registered user = **admin** → the Admin Panel appears below the task list.
 
-## How it works
-
-```mermaid
-graph TD
-  A[User] -->|login / register| B[AuthForm]
-  B -->|salt + SHA-256 hash| C[localStorage pwa_db]
-  B -->|onLogin| D[App]
-  D -->|logged in| E[TaskSection]
-  E -->|read/write| F[localStorage tasks_<user>]
-  D -->|role = admin| G[AdminPanel]
-  G -->|reads| C
-  G -->|reads| H[localStorage pwa_log]
-  D -->|beforeinstallprompt| I[Download App]
-  J[Service Worker] -->|caches app shell + assets| K[offline works]
-```
-
-Everything lives in the browser (`localStorage`) — there is no server. Components are small and single-purpose: `App` (state + PWA), `AuthForm` (accounts), `TaskSection` (tasks), `AdminPanel` (admin view), `security.js` (hashing + safe storage helpers).
-
-## Screenshots
-
-| Log in | Tasks (offline) | Admin Panel |
-|---|---|---|
-| ![login](screenshots/login.png) | ![tasks](screenshots/tasks.png) | ![admin](screenshots/admin.png) |
 
 ## 🔒 Security model
 
@@ -96,4 +58,4 @@ npm run screenshots       # regenerate the README screenshots
 └── index.html            # app shell (includes CSP meta headers)
 ```
 
-Made for the Web · Games · Mobile · Cybersecurity programme (3-week remote curriculum, August 2026).
+
