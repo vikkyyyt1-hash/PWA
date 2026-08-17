@@ -1,16 +1,19 @@
 import { readJSON } from './security.js'
 
-// Admin-only view: all users with their task counts + the local audit log.
+// Count tasks for a user (fall back to 0 on any bad data).
+function countTasks(name) {
+  const tasks = readJSON(`tasks_${name}`, [])
+  return Array.isArray(tasks) ? tasks.length : 0
+}
+
+// Admin-only view: users with roles + task counts, and the local audit log.
 export default function AdminPanel() {
   const db = readJSON('pwa_db', {})
   const log = readJSON('pwa_log', [])
   const users = Object.entries(db).map(([name, acc]) => ({
     name,
     role: acc.role || 'user',
-    count: (() => {
-      const tasks = readJSON(`tasks_${name}`, [])
-      return Array.isArray(tasks) ? tasks.length : 0
-    })(),
+    count: countTasks(name),
   }))
 
   return (

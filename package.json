@@ -11,7 +11,8 @@
     "deploy": "npm run build",
     "check-offline": "npm run build && node scripts/check-offline.mjs",
     "check-security": "npm run build && node scripts/check-security.mjs",
-    "check-lighthouse": "node scripts/check-lighthouse.mjs"
+    "check-lighthouse": "node scripts/check-lighthouse.mjs",
+    "screenshots": "npm run build && node scripts/capture-screenshots.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",

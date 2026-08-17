@@ -1,6 +1,6 @@
-// Service worker — dzięki niemu aplikacja działa offline i można ją zainstalować.
+// Service worker — makes the app work offline and installable.
 const CACHE_NAME = 'pwa-task-app-v3'
-// Pliki zapisywane od razu podczas instalacji (podstawa działania aplikacji).
+// Core files saved at install, available even without internet.
 const PRECACHE = [
   './',
   './index.html',
@@ -10,7 +10,7 @@ const PRECACHE = [
   './icon-512.svg',
 ]
 
-// Instalacja: zapisujemy podstawowe pliki, żeby były nawet bez internetu.
+// Install: cache the core files.
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE))
@@ -18,7 +18,7 @@ self.addEventListener('install', (event) => {
   self.skipWaiting()
 })
 
-// Aktywacja: usuwamy stare wersje cache i przejmujemy kontrolę nad stroną.
+// Activate: delete old caches, take control of pages.
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
@@ -28,9 +28,9 @@ self.addEventListener('activate', (event) => {
   self.clients.claim()
 })
 
-// Obsługa zapytań offline:
-// - strona (navigate): najpierw sieć, gdy brak internetu wracamy do zapisanej kopii;
-// - pliki JS/CSS: najpierw cache, a pierwszy raz pobieramy z sieci i zapisujemy.
+// Fetch offline:
+// - page (navigate): network first, fall back to the cached copy offline;
+// - JS/CSS files: cache first, fetch + cache on first use.
 self.addEventListener('fetch', (event) => {
   const { request } = event
 

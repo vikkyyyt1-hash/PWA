@@ -1,83 +1,99 @@
-# Capstone Project
+# 📱 PWA Task App
 
-This project is a modern web-based capstone starter designed for students building a polished portfolio piece. It is intended for learners who want a simple, professional foundation for a web app or game idea, and it provides a clear structure for organizing code, assets, documentation, and future features. The current version includes a polished landing experience with an interactive quiz loop, local progress saving, and responsive styling that can be extended into a full feature-rich app.
+A secure, offline-first, installable task manager built with React + Vite, hardened against the OWASP Top 10.
+
+## What it is / who it's for
+
+A small but real Progressive Web App (PWA): sign up, keep a task list, install it on your phone, and use it offline. Built as a **Track S capstone** — the goal is not just "it runs", but *it is hardened*: every input is validated, output is escaped, passwords are never stored, and the security model is documented.
+
+**Live link:** https://vikkyyyt1-hash.github.io/PWA/
+
+## Features
+
+- Installable PWA (manifest + service worker + "Download App" button)
+- Works **offline** (verified by an automated browser test)
+- Local accounts: the **first user is admin**, others are regular users
+- **Admin Panel**: all users, task counts, and a local security audit log
+- Input validation + sanitisation, XSS-safe output (React escaping)
+- Salted password hashing — plaintext never touches `localStorage`
+- Lighthouse: Performance / Accessibility / Best Practices / SEO = **100/100/100/100**
+
+## How to run it
+
+```bash
+# 1. clone
+git clone https://github.com/vikkyyyt1-hash/PWA.git
+cd PWA
+
+# 2. install dependencies
+npm install
+
+# 3. run the dev server (http://localhost:5173)
+npm run dev
+
+# 4. production build + preview
+npm run build
+npm run preview
+```
+
+First registered user = **admin** → the Admin Panel appears below the task list.
+
+## How it works
+
+```mermaid
+graph TD
+  A[User] -->|login / register| B[AuthForm]
+  B -->|salt + SHA-256 hash| C[localStorage pwa_db]
+  B -->|onLogin| D[App]
+  D -->|logged in| E[TaskSection]
+  E -->|read/write| F[localStorage tasks_<user>]
+  D -->|role = admin| G[AdminPanel]
+  G -->|reads| C
+  G -->|reads| H[localStorage pwa_log]
+  D -->|beforeinstallprompt| I[Download App]
+  J[Service Worker] -->|caches app shell + assets| K[offline works]
+```
+
+Everything lives in the browser (`localStorage`) — there is no server. Components are small and single-purpose: `App` (state + PWA), `AuthForm` (accounts), `TaskSection` (tasks), `AdminPanel` (admin view), `security.js` (hashing + safe storage helpers).
+
+## Screenshots
+
+| Log in | Tasks (offline) | Admin Panel |
+|---|---|---|
+| ![login](screenshots/login.png) | ![tasks](screenshots/tasks.png) | ![admin](screenshots/admin.png) |
+
+## 🔒 Security model
+
+What we defend against and how — see [docs/security-notes.md](docs/security-notes.md) for the full Day 8–12 audit.
+
+| Threat | Defence |
+|---|---|
+| XSS | React escapes all output; automated test proves `<script>` stays text |
+| Password leaks | Salted SHA-256 hash only, never plaintext |
+| Bad / malicious input | Validate + sanitise everything (`username`, `password`, `task`) |
+| Broken access control | Admin role comes only from the account record; panel never renders for non-admins |
+| Outdated deps | `npm audit` → 0 vulnerabilities |
+| Insecure transport | HTTPS (GitHub Pages) + CSP, `nosniff`, `no-referrer` headers |
+
+**Known limits (documented, not hidden):** auth is client-side (a demo — `localStorage` is readable by anyone with device access) and there is no remote logging. These are trade-offs of a static PWA, tracked in issues #12 and #13.
+
+## Tests
+
+```bash
+npm run check-security    # automated XSS test in Chrome (proves input stays text)
+npm run check-offline     # real offline test in Chrome (app must render without network)
+npm run check-lighthouse  # Lighthouse audit against the live site (100/100/100/100)
+npm run screenshots       # regenerate the README screenshots
+```
 
 ## Project structure
 
 ```text
-your-project/
-├── src/           # your code
-├── assets/        # images, sounds, data
-├── README.md      # the front door of your project
-├── .gitignore
-└── vite.config.js
+├── src/                  # React components + security helpers
+├── public/               # manifest, icons, service worker
+├── scripts/              # automated checks (offline, security, lighthouse, screenshots)
+├── docs/                 # security notes, issues board, lighthouse report, screenshots
+└── index.html            # app shell (includes CSP meta headers)
 ```
 
-## Getting started
-
-```bash
-npm install
-npm run dev
-```
-
-Verify the offline mode really works (builds and tests in Chrome):
-
-```bash
-npm run check-offline
-```
-
-## Planning artifacts
-
-- Issues: [docs/issues.md](docs/issues.md)
-- Project board: [docs/project-board.md](docs/project-board.md)
-
-## Deployment
-
-Build the project for production with:
-
-```bash
-npm run build
-```
-
-The output will be generated in the dist folder.
-
-Use this project as the base for your own capstone implementation.
-
-# TrackS — Capstone Task Manager
-
-An installable, accessible, and secure task management application built with React and Vite.
-
-## 🔒 Security & PWA Features (Day 6 & Day 7)
-
-- **Installable PWA**: Integrated `beforeinstallprompt` listener providing a native "Install App" button.
-- **Offline Support**: Automatically detects offline status (`navigator.onLine`) and retains full functionality using `localStorage`.
-- **Hashed Passwords**: Passwords are SHA-256 hashed (`crypto.subtle`) before storage — the plaintext is never written to `localStorage`, only a hashed marker is compared at login.
-- **XSS Prevention**: React escapes all rendered output by default, so a task containing `<script>` is shown as harmless text, never executed.
-- **Validation**: Enforces char limits, blocks empty entries, and eliminates duplicate tasks.
-- **Data Storage**: User credentials (hashes) and tasks are isolated per account in `localStorage`.
-
-## 🔐 Security Audit (Day 8)
-
-OWASP Top 10 summary, our vulnerability assessment, XSS test and DevTools notes: [docs/security-notes.md](docs/security-notes.md)
-
-## 🛡️ Hardening (Day 9)
-
-Input validation + sanitisation, output escaping (proven by an automated XSS test), salted password hashing, security headers via meta tags (CSP, nosniff, no-referrer). Verify with:
-
-```bash
-npm run check-security
-```
-
-## 🚀 Live & audit (Day 10)
-
-- **Live**: https://vikkyyyt1-hash.github.io/PWA/ (HTTPS)
-- **Lighthouse**: Performance 100 · Accessibility 100 · Best Practices 100 · SEO 100 (`npm run check-lighthouse`)
-- **Self-audit** OWASP Top 10 + findings → Issues: [docs/security-notes.md](docs/security-notes.md), [docs/issues.md](docs/issues.md)
-
-## 🎯 Capstone scope (Week 3)
-
-**Secure installable app** — this project, built out: a PWA with local accounts, offline-first task management and a documented security model hardened against the OWASP Top 10.
-
-Implemented (Day 11–12): **role-based access** — the first registered account is `admin` and sees the Admin Panel (users + task counts + local audit log); role comes only from the account record, never from user input. Edge cases handled: corrupt `localStorage` never crashes the app, malformed accounts fail login safely.
-
-Issues: #12 (open, client-side auth limitation), #15 (docs brief).
+Made for the Web · Games · Mobile · Cybersecurity programme (3-week remote curriculum, August 2026).
