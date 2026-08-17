@@ -21,23 +21,6 @@ A small but real Progressive Web App (PWA): sign up, keep a task list, install i
 
 ```
 
-First registered user = **admin** → the Admin Panel appears below the task list.
-
-
-## 🔒 Security model
-
-What we defend against and how — see [docs/security-notes.md](docs/security-notes.md) for the full Day 8–12 audit.
-
-| Threat | Defence |
-|---|---|
-| XSS | React escapes all output; automated test proves `<script>` stays text |
-| Password leaks | Salted SHA-256 hash only, never plaintext |
-| Bad / malicious input | Validate + sanitise everything (`username`, `password`, `task`) |
-| Broken access control | Admin role comes only from the account record; panel never renders for non-admins |
-| Outdated deps | `npm audit` → 0 vulnerabilities |
-| Insecure transport | HTTPS (GitHub Pages) + CSP, `nosniff`, `no-referrer` headers |
-
-**Known limits (documented, not hidden):** auth is client-side (a demo — `localStorage` is readable by anyone with device access) and there is no remote logging. These are trade-offs of a static PWA, tracked in issues #12 and #13.
 
 ## Tests
 
