@@ -21,16 +21,6 @@ A small but real Progressive Web App (PWA): sign up, keep a task list, install i
 
 ```
 
-
-## Tests
-
-```bash
-npm run check-security    # automated XSS test in Chrome (proves input stays text)
-npm run check-offline     # real offline test in Chrome (app must render without network)
-npm run check-lighthouse  # Lighthouse audit against the live site (100/100/100/100)
-npm run screenshots       # regenerate the README screenshots
-```
-
 ## Project structure
 
 ```text
