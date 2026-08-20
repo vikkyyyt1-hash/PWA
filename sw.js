@@ -1,5 +1,7 @@
 // Service worker — makes the app work offline and installable.
-const CACHE_NAME = 'pwa-task-app-v3'
+// v4: force-updated assets were removed from gh-pages; new cache name forces
+// installed clients to drop the stale v3 cache and re-precache the current app.
+const CACHE_NAME = 'pwa-task-app-v4'
 // Core files saved at install, available even without internet.
 const PRECACHE = [
   './',
