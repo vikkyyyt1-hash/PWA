@@ -60,7 +60,7 @@ Everything lives in the browser (`localStorage`) — there is no server. Compone
 
 | Log in | Tasks (offline) | Admin Panel |
 |---|---|---|
-| ![login](screenshots/login.png) | ![tasks](screenshots/tasks.png) | ![admin](screenshots/admin.png) |
+| ![login](docs/screenshots/login.png) | ![tasks](docs/screenshots/tasks.png) | ![admin](docs/screenshots/admin.png) |
 
 ## 🔒 Security model
 
