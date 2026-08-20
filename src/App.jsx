@@ -76,7 +76,10 @@ export default function App() {
         </button>
       </header>
 
-      
+      {user
+        ? <TaskSection user={user} onLogout={handleLogout} />
+        : <AuthForm onLogin={handleLogin} />
+      }
 
       {user && role === 'admin' && <AdminPanel />}
       {showSecurity && <SecurityNotes />}
