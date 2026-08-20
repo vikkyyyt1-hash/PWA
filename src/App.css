@@ -357,3 +357,35 @@ header p {
   border-radius: 6px;
   font-size: 0.8rem;
 }
+
+.install-help-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 27, 75, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 50;
+}
+
+.install-help {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1.5rem;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 10px 30px rgba(30, 27, 75, 0.3);
+}
+
+.install-help h2 {
+  margin: 0 0 0.5rem;
+  color: #4c1d95;
+}
+
+.install-help ol {
+  margin: 0 0 1.25rem;
+  padding-left: 1.25rem;
+  line-height: 1.6;
+  color: #334155;
+}

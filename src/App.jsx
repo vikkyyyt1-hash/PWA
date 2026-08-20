@@ -12,7 +12,7 @@ export default function App() {
   const [role, setRole] = useState(() => localStorage.getItem('pwa_role'))
   const [isOffline, setIsOffline] = useState(!navigator.onLine)
   const [deferredPrompt, setDeferredPrompt] = useState(null)
-  const [installMsg, setInstallMsg] = useState('')
+  const [showInstallHelp, setShowInstallHelp] = useState(false)
   const [showSecurity, setShowSecurity] = useState(false)
 
   // Track online/offline → show badge.
@@ -36,13 +36,19 @@ export default function App() {
     return () => window.removeEventListener('beforeinstallprompt', handlePrompt)
   }, [])
 
-  // Install the app on the phone/desktop.
+  // Hide the button hint once the app is installed.
+  useEffect(() => {
+    const handleInstalled = () => setDeferredPrompt(null)
+    window.addEventListener('appinstalled', handleInstalled)
+    return () => window.removeEventListener('appinstalled', handleInstalled)
+  }, [])
+
+  // Install the app, or explain how if the browser offers no prompt.
   const handleInstall = async () => {
     if (!deferredPrompt) {
-      setInstallMsg('No install prompt — use browser menu → install app.')
+      setShowInstallHelp(true)
       return
     }
-    setInstallMsg('')
     deferredPrompt.prompt()
     const { outcome } = await deferredPrompt.userChoice
     if (outcome === 'accepted') setDeferredPrompt(null)
@@ -70,7 +76,6 @@ export default function App() {
         <h1>📱 PWA Task App</h1>
         {isOffline && <span className="offline-badge">📡 Offline Mode</span>}
         <button className="install-btn" onClick={handleInstall}>📥 Download App</button>
-        {installMsg && <p className="error-msg">{installMsg}</p>}
         <button className="security-toggle" onClick={() => setShowSecurity(!showSecurity)}>
           🔒 Security Notes
         </button>
@@ -83,6 +88,21 @@ export default function App() {
 
       {user && role === 'admin' && <AdminPanel />}
       {showSecurity && <SecurityNotes />}
+
+      {showInstallHelp && (
+        <div className="install-help-overlay" role="dialog" aria-modal="true" aria-label="Install the app">
+          <div className="install-help">
+            <h2>Install this app</h2>
+            <p>Your browser can add this app to your home screen or desktop.</p>
+            <ol>
+              <li><strong>Phone (Android/iPhone):</strong> open the browser menu (⋯) → <em>Add to Home Screen</em> / <em>Install app</em>.</li>
+              <li><strong>Desktop Chrome / Edge:</strong> click the install <span aria-hidden="true">⊕</span> icon in the address bar, or menu → <em>Install PWA Task App…</em>.</li>
+              <li><strong>Desktop Firefox / Safari:</strong> menu → <em>Add to Home Screen</em> / <em>Pin to Dock</em>.</li>
+            </ol>
+            <button className="btn-primary" onClick={() => setShowInstallHelp(false)}>Got it</button>
+          </div>
+        </div>
+      )}
     </main>
   )
 }
